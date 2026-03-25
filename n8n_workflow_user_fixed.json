@@ -176,7 +176,7 @@
     },
     {
       "parameters": {
-        "jsCode": "\nconst body = $('Webhook - Poet').first().json.body;\nconst analysis = body.analysis || 'Unknown structure';\nconst bridge = body.bridge || 'Unknown mood';\nconst targetLang = body.targetLanguage || 'English';\n\nreturn [{ json: { chatInput: `SYSTEM: You are Rocinante, a brilliant rock/pop songwriter. Craft final ${targetLang} lyrics based on the emotional payload. Respect the syllable structure and keep the vibe authentic to ${targetLang}.\\n\\nUSER: Write ${targetLang} song lyrics.\\nStructure:\\n${analysis}\\n\\nEmotional meaning:\\n${bridge}`, analysis: analysis, bridge: bridge, targetLanguage: targetLang } }];\n"
+        "jsCode": "\nconst body = $('Webhook - Poet').first().json.body;\nconst analysis = body.analysis || 'Unknown structure';\nconst bridge = body.bridge || 'Unknown mood';\nconst targetLang = body.targetLanguage || 'English';\nconst literal = body.literalTranslation || '';\nconst original = body.originalLyrics || '';\n\nconst prompt = `SYSTEM: You are Rocinante, a Master Songwriter and Poet. Your task is to transform a literal translation into a high-quality, rhythmic, and poetic ${targetLang} song version.\n\nCRITICAL CONSTRAINTS (MANDATORY):\n1. CORE MEANING: You MUST strictly preserve the exact meaning, narrative arc, and emotional intent of the literal translation provided below. Do NOT invent new metaphors or change the story.\n2. STRUCTURE & RHYTHM: You must adhere to the provided [STRUCTURE] (poetic meter, feet, syllable count). The result must be singable and rhythmic.\n3. AUTHENTICITY: Use natural, elegant, and poetic phrasing in ${targetLang}.\n4. COMPOSITION: Stay faithful to the original composition's flow.\n\n[ORIGINAL CONTEXT]:\n${original}\n\n[LITERAL TRANSLATION (STAY TRUE TO THIS MEANING)]:\n${literal}\n\n[TECHNICAL STRUCTURE TO FOLLOW]:\n${analysis}\n\n[MOOD REFERENCE]:\n${bridge}\n\nOUTPUT ONLY THE FINAL SONG LYRICS. NO COMMENTARY.`;\n\nreturn [{ json: { chatInput: prompt, targetLanguage: targetLang } }];\n"
       },
       "id": "b27c3bab-0c09-4d2d-805d-89b9fbb39641",
       "name": "Build: Poet Request",
@@ -214,7 +214,7 @@
         },
         "options": {
           "baseURL": "https://polza.ai/api/v1",
-          "temperature": 0.8
+          "temperature": 0.3
         },
         "builtInTools": {}
       },
