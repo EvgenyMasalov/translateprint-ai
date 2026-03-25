@@ -152,10 +152,16 @@
 <p>Je vois la vie en rose.</p>
 </div>
 <div class="mt-16 flex flex-col items-center gap-6">
-<button class="group flex items-center gap-3 px-10 py-5 bg-primary-container text-on-primary-container font-headline font-bold text-lg rounded-full clay-pill hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg">
+<div class="flex items-center gap-4">
+<button class="group flex items-center gap-3 px-10 py-5 bg-primary-container text-on-primary-container font-headline font-bold text-lg rounded-full clay-pill hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg" onclick="analyzeManuscript()">
 <span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
                             Analyze Manuscript
                         </button>
+<button id="export-report-btn" class="p-5 bg-tertiary-container text-on-tertiary-container rounded-full clay-pill hover:scale-110 active:scale-90 transition-all duration-300 shadow-md group relative">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+<span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Export Full Report (.txt)</span>
+</button>
+</div>
 <p class="text-on-surface-variant text-sm font-medium italic opacity-70">Trigger AI linguistic analysis &amp; rhythmic refinement</p>
 </div>
 </div>
@@ -178,7 +184,7 @@
 <div class="clay-card bg-secondary-fixed/30 rounded-lg p-8 border border-white/50 backdrop-blur-md">
 <div class="flex justify-between items-start mb-6">
 <h3 class="font-headline text-lg font-bold text-secondary">Refined Translation</h3>
-<button class="p-2 bg-white/80 rounded-full shadow-sm hover:bg-white transition-all active:scale-90 flex items-center justify-center">
+<button id="copy-refined-btn" class="p-2 bg-white/80 rounded-full shadow-sm hover:bg-white transition-all active:scale-90 flex items-center justify-center">
 <span class="material-symbols-outlined text-secondary text-xl" data-icon="content_copy">content_copy</span>
 </button>
 </div>
@@ -238,6 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const translation = localStorage.getItem("lyricai_translation") || "No literal translation loaded. Please start from the Editor.";
     const analysis = localStorage.getItem("lyricai_structure") || "None";
     const mood = localStorage.getItem("lyricai_mood") || "None";
+    const metaphors = localStorage.getItem("lyricai_metaphors") || "None";
+    const originalLyrics = localStorage.getItem("lyricai_original") || "None";
     
     // Headline Injection
     const headline = document.querySelector("h1.font-headline");
@@ -258,8 +266,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (checkCircle) checkCircle.style.display = "none";
 
     // Analyze Manuscript Actions
-    if(analyzeBtn) {
-        analyzeBtn.addEventListener("click", async () => {
+    window.analyzeManuscript = async () => {
+        if(!analyzeBtn) return;
             // UI Loading State
             const originalBtnText = analyzeBtn.innerHTML;
             analyzeBtn.innerHTML = `<span class="material-symbols-outlined animate-spin font-bold text-2xl mr-2">progress_activity</span> Synthesizing Poetic Form...`;
@@ -295,8 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 analyzeBtn.disabled = false;
                 analyzeBtn.classList.remove("opacity-50", "pointer-events-none");
             }
-        });
-    }
+    };
     // --- Deep Analyze (Literary Editor via Claude Sonnet 4) ---
     const deepAnalyzeBtn = document.getElementById("deep-analyze-btn");
     const statusCheck = document.getElementById("status-check");
@@ -351,6 +358,82 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    // --- Copy Refined Lyrics ---
+    const copyRefinedBtn = document.getElementById("copy-refined-btn");
+    copyRefinedBtn.addEventListener("click", () => {
+        const textToCopy = resultBody.innerText || resultBody.textContent;
+        if (!textToCopy || textToCopy.includes("Awaiting creative")) return;
+        
+        navigator.clipboard.writeText(textToCopy);
+        
+        const icon = copyRefinedBtn.querySelector(".material-symbols-outlined");
+        const originalIcon = icon.innerText;
+        icon.innerText = "check";
+        copyRefinedBtn.classList.add("bg-green-100");
+        setTimeout(() => {
+            icon.innerText = originalIcon;
+            copyRefinedBtn.classList.remove("bg-green-100");
+        }, 2000);
+    });
+
+    // --- Export Full Report (.txt) ---
+    const exportBtn = document.getElementById("export-report-btn");
+    exportBtn.addEventListener("click", () => {
+        const refinedOutput = resultBody.innerText || resultBody.textContent;
+        const status = statusCheck.innerText || statusCheck.textContent;
+        
+        const reportContent = `LYRICAI STUDIO - FULL REPORT
+==================================================
+SONG TITLE: ${songTitle}
+TARGET LANGUAGE: ${targetLang}
+DATE: ${new Date().toLocaleString()}
+
+--------------------------------------------------
+[1] ORIGINAL LYRICS
+--------------------------------------------------
+${originalLyrics}
+
+--------------------------------------------------
+[2] MOOD ANALYSIS
+--------------------------------------------------
+${mood}
+
+--------------------------------------------------
+[3] STRUCTURE ANALYSIS
+--------------------------------------------------
+${analysis}
+
+--------------------------------------------------
+[4] KEY METAPHORS
+--------------------------------------------------
+${metaphors}
+
+--------------------------------------------------
+[5] POETIC TRANSLATION (AGENT 1&2 OUTPUT)
+--------------------------------------------------
+${translation}
+
+--------------------------------------------------
+[6] REFINED & POLISHED VERSION (AGENT 3&4 OUTPUT)
+--------------------------------------------------
+${refinedOutput}
+
+STATUS: ${status}
+
+==================================================
+Generated by LyricAI Studio
+`;
+
+        const blob = new Blob([reportContent], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${songTitle.replace(/\s+/g, '_')}_Analysis_Report.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
 });
 </script>
 </body></html>

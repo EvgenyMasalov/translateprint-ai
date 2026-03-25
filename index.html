@@ -269,6 +269,7 @@
         localStorage.setItem("lyricai_structure", document.getElementById("analysis-output").innerText);
         localStorage.setItem("lyricai_mood", document.getElementById("mood-output").innerText);
         localStorage.setItem("lyricai_translation", textToCopy);
+        localStorage.setItem("lyricai_metaphors", document.getElementById("metaphors-output").innerText);
         localStorage.setItem("lyricai_targetLang", document.getElementById("target-language").value);
         
         // Unlock Agent page
@@ -352,6 +353,7 @@
             localStorage.setItem("lyricai_original", text);
             localStorage.setItem("lyricai_structure", data.structure_output || "");
             localStorage.setItem("lyricai_mood", data.mood_output || "");
+            localStorage.setItem("lyricai_metaphors", data.metaphors_output || "");
             localStorage.setItem("lyricai_translation", data.poet_output || "");
             localStorage.setItem("lyricai_targetLang", targetLang);
 
