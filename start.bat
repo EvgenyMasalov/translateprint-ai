@@ -66,14 +66,14 @@ timeout /t 3 /nobreak >nul
 
 :: --- [3/3] Open browser ------------------------------------------------------
 echo [3/3] Opening browser...
-start "" "http://127.0.0.1:8080"
+start "" "http://127.0.0.1:8080/editor.html"
 
 echo.
 echo ============================================
 echo    LyricAI Studio is running!
 echo.
-echo    Editor:    http://127.0.0.1:8080
-echo    Agent Pro: http://127.0.0.1:8080/agent.html
+echo    Editor:    http://127.0.0.1:8080/editor.html
+echo    Agent Pro: http://127.0.0.1:8080/agent_pro.html
 echo    n8n:       http://localhost:5678
 echo ============================================
 pause
