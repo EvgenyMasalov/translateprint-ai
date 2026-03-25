@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LyricAI - Professional Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#B5EAD7",
+                        "accent": "#FFB7B2",
+                        "secondary": "#E2F0CB",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#0d1613",
+                    },
+                    fontFamily: {
+                        "display": ["Nunito", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .clay-card {
+            background: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.04), 
+                        inset -4px -4px 8px rgba(0, 0, 0, 0.01),
+                        inset 4px 4px 8px rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .clay-button {
+            background: #B5EAD7;
+            box-shadow: 4px 4px 10px rgba(181, 234, 215, 0.3), 
+                        inset -3px -3px 5px rgba(0, 0, 0, 0.05),
+                        inset 3px 3px 5px rgba(255, 255, 255, 0.4);
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .clay-button:active {
+            box-shadow: inset 4px 4px 10px rgba(0,0,0,0.1), inset -4px -4px 10px rgba(255,255,255,0.5);
+        }
+        .clay-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #e2e8f0;
+        }
+        .clay-input-inner {
+            background: #f1f5f4;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.04),
+                        inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+            border: none;
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 h-screen flex flex-col overflow-hidden">
+<header class="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex items-center justify-between px-6 z-50 shrink-0">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="size-8 clay-button flex items-center justify-center text-slate-700">
+<span class="material-symbols-outlined text-sm font-bold">auto_fix_high</span>
+</div>
+<span class="font-bold tracking-tight text-slate-800 text-lg">LyricAI <span class="text-[#FFB7B2] italic font-black ml-1">Studio</span></span>
+</div>
+<nav class="hidden md:flex items-center gap-4 text-sm font-medium text-slate-500">
+<a class="px-3 py-1.5 hover:bg-slate-100 rounded-lg transition-colors text-slate-900 bg-slate-100" href="#">Editor</a>
+<a id="nav-agent" class="px-3 py-1.5 transition-all duration-300 opacity-50 cursor-not-allowed pointer-events-none rounded-lg relative" href="agent.html" title="Unlock by copying lyrics">Agent</a><a class="px-3 py-1.5 hover:bg-slate-100 rounded-lg transition-colors" href="#">Help</a>
+<a class="px-3 py-1.5 hover:bg-slate-100 rounded-lg transition-colors" href="#">Collaborators</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+<button class="px-3 py-1 text-xs font-bold text-slate-600 hover:text-primary transition-colors">History</button>
+<button class="px-3 py-1 text-xs font-bold text-slate-600 hover:text-primary transition-colors">Compare</button>
+</div>
+<div class="h-8 w-[1px] bg-slate-200"></div>
+<div class="size-9 rounded-full border-2 border-primary/20 bg-slate-200 overflow-hidden ring-4 ring-white shadow-sm">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9GHa59t1qOeb_dZbcj8zkAFcW9x8kkQz-jsmVkB5HJmGg8dQYKCUyJ1TsDVjciK8Xwa12Mn8spNXyIQGMAl2rGP__UJPitYnSjOUxCOJshrEdiNLiEpi4oQNizOpxbLqmmoYfMO9c9i1mpBfW77L9Iy9X-P5Y6OAoaEwc7vrfwh_2qaMHYqhod4eJxzdsSMtME1UU0B7DQaDdwfBTb1V09qFz_RFB3PePB6boNd6D9Qi_Gjotp0696T_M9r39o8TYgp1BQcJFPbHa"/>
+</div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<section class="w-2/3 flex flex-col bg-white relative">
+<!-- New Dedicated Title Field -->
+<div class="px-8 py-4 border-b border-slate-50 bg-slate-50/30">
+<div class="max-w-4xl mx-auto">
+<input id="song-title-input" class="text-3xl font-black text-slate-800 border-none p-0 focus:ring-0 w-full bg-transparent placeholder:text-slate-300" placeholder="NAME TEXT SONG" type="text" value=""/>
+</div>
+</div>
+<div class="flex-1 flex flex-col p-8 overflow-y-auto">
+<div class="max-w-4xl w-full mx-auto flex flex-col h-full">
+<!-- Expanded Lyrics Editor Area -->
+<textarea id="lyrics-input" class="flex-1 w-full text-xl leading-relaxed text-slate-700 border-none p-0 focus:ring-0 resize-none placeholder:text-slate-200 min-h-[1000px] outline-none" placeholder="Add song lyrics and press the analyze button"></textarea>
+</div>
+</div>
+<div class="h-16 border-t border-slate-100 px-6 flex items-center justify-between bg-white shrink-0">
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1 text-sm font-semibold">
+<span class="material-symbols-outlined text-xl">format_bold</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1 text-sm font-semibold">
+<span class="material-symbols-outlined text-xl">format_italic</span>
+</button>
+<div class="w-[1px] h-4 bg-slate-200 mx-1"></div>
+<button class="p-2 text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1 text-sm font-semibold">
+<span class="material-symbols-outlined text-xl">mic</span>
+<span>Record</span>
+</button>
+<!-- Assets button removed -->
+</div>
+<div class="flex items-center gap-4">
+<!-- Saving indicator removed -->
+<button id="analyze-btn" class="clay-button px-6 py-2.5 flex items-center gap-2 text-slate-700 font-bold text-sm">
+    <span id="analyze-btn-text">Analyze</span> <span id="analyze-btn-icon" class="material-symbols-outlined text-sm">auto_awesome</span>
+</button>
+</div>
+</div>
+</section>
+<aside class="w-1/3 border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden">
+<div class="p-5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<h2 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Actionable Insights</h2>
+</div>
+<div class="flex items-center gap-2" id="status-indicator">
+<span class="flex h-2 w-2 rounded-full bg-slate-300"></span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Idle</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
+
+<!-- MOOD ANALYSIS CARD -->
+<div class="clay-card p-8 rounded-2xl">
+<div class="flex items-start gap-3 mb-6">
+<div class="size-12 rounded-xl bg-primary/20 flex items-center justify-center text-slate-700 shrink-0">
+<span class="material-symbols-outlined text-2xl">psychology</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-400 uppercase">Mood Analysis</p>
+<h4 class="font-bold text-slate-800 text-xl">Emotional Payload</h4>
+</div>
+</div>
+<p id="mood-output" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">Waiting for insight generation...</p>
+</div>
+
+<!-- STRUCTURE ANALYSIS CARD -->
+<div class="clay-card p-6 rounded-2xl">
+<div class="flex items-start gap-3 mb-3">
+<div class="size-8 rounded-xl bg-secondary flex items-center justify-center text-slate-600 shrink-0">
+<span class="material-symbols-outlined text-lg">architecture</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Structure Analysis</p>
+<h4 class="font-bold text-slate-800">Rhythm &amp; Syllable Match</h4>
+</div>
+</div>
+<p id="analysis-output" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">Awaiting scan...</p>
+</div>
+
+<!-- METAPHORS CARD -->
+<div class="clay-card p-6 rounded-2xl">
+<div class="flex items-start gap-3 mb-3">
+<div class="size-8 rounded-xl bg-secondary flex items-center justify-center text-slate-600 shrink-0">
+<span class="material-symbols-outlined text-lg">local_florist</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Key Metaphors</p>
+<h4 class="font-bold text-slate-800">Poetic Devices</h4>
+</div>
+</div>
+<p id="metaphors-output" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">Awaiting scan...</p>
+</div>
+
+<!-- TRANSLATION CARD -->
+<div class="clay-card p-8 rounded-2xl border-l-4 border-primary">
+<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col gap-2 w-full">
+<div class="flex items-center justify-between w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-2xl">translate</span>
+<span class="text-xs font-bold text-slate-400 uppercase">AI Lyric Adaptation</span>
+</div>
+<span class="material-symbols-outlined text-primary text-2xl">check_circle</span>
+</div>
+<div class="relative mt-2">
+<select id="target-language" class="w-full clay-input-inner rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 appearance-none cursor-pointer focus:outline-none">
+<option value="English">English</option>
+<option value="English Slang">English Slang</option>
+<option value="American English">American English</option>
+<option value="American English Slang">American English Slang</option>
+<option value="Russian">Russian</option>
+<option value="Russian Slang">Russian Slang</option>
+<option value="German Slang">German Slang (DE)</option>
+<option value="French">French (FR)</option>
+<option value="Spanish">Spanish (ES)</option>
+<option value="Japanese">Japanese (JP)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="mb-4 text-slate-400 font-bold text-xs uppercase">Translated Output</div>
+<p id="poet-output" class="text-sm italic text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-100 mb-6 whitespace-pre-wrap">Awaiting AI creative generation...</p>
+<button id="copy-lyrics-btn" class="text-slate-500 text-xs font-bold flex items-center gap-2 hover:text-slate-800 uppercase tracking-wider"><span class="material-symbols-outlined text-sm">content_copy</span> COPY LYRICS</button>
+</div>
+
+</div>
+</aside>
+</main>
+<script>
+    const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/analyze-lyrics"; 
+
+    const analyzeBtn = document.getElementById("analyze-btn");
+    const targetLanguageSelect = document.getElementById("target-language");
+    const analyzeBtnText = document.getElementById("analyze-btn-text");
+    const analyzeBtnIcon = document.getElementById("analyze-btn-icon");
+    const lyricsInput = document.getElementById("lyrics-input");
+    const analysisOutput = document.getElementById("analysis-output");
+    const moodOutput = document.getElementById("mood-output");
+    const metaphorsOutput = document.getElementById("metaphors-output");
+    const poetOutput = document.getElementById("poet-output");
+    const statusIndicator = document.getElementById("status-indicator");
+    const copyLyricsBtn = document.getElementById("copy-lyrics-btn");
+    const navAgent = document.getElementById("nav-agent");
+
+    copyLyricsBtn.addEventListener("click", () => {
+        const textToCopy = poetOutput.innerText || poetOutput.textContent;
+        if (!textToCopy || textToCopy.includes("Awaiting AI creative")) return;
+        
+        navigator.clipboard.writeText(textToCopy);
+
+        // Capture absolute latest state from inputs for Agent Pro page
+        const songTitle = document.getElementById("song-title-input").value.trim() || "Untitled Song";
+        localStorage.setItem("lyricai_title", songTitle);
+        localStorage.setItem("lyricai_original", document.getElementById("lyrics-input").value);
+        localStorage.setItem("lyricai_structure", document.getElementById("analysis-output").innerText);
+        localStorage.setItem("lyricai_mood", document.getElementById("mood-output").innerText);
+        localStorage.setItem("lyricai_translation", textToCopy);
+        localStorage.setItem("lyricai_targetLang", document.getElementById("target-language").value);
+        
+        // Unlock Agent page
+        navAgent.classList.remove("opacity-50", "cursor-not-allowed", "pointer-events-none");
+        navAgent.classList.add("hover:bg-primary/20", "text-slate-900", "font-black");
+        navAgent.innerHTML = `Agent <span class="absolute -top-1 -right-2 text-[8px] bg-green-400 text-slate-800 px-1.5 py-0.5 rounded-full font-bold animate-bounce shadow-sm">PRO</span>`;
+        
+        // Button animation
+        const originalHtml = copyLyricsBtn.innerHTML;
+        copyLyricsBtn.innerHTML = `<span class="material-symbols-outlined text-green-500 text-sm">check</span> COPIED!`;
+        setTimeout(() => {
+            copyLyricsBtn.innerHTML = originalHtml;
+        }, 2000);
+    });
+
+    navAgent.addEventListener("click", () => {
+        // Save latest title exactly when navigating
+        const songTitle = document.getElementById("song-title-input").value.trim() || "Untitled Song";
+        localStorage.setItem("lyricai_title", songTitle);
+    });
+
+    analyzeBtn.addEventListener("click", async () => {
+        const text = lyricsInput.value.trim();
+        const targetLang = targetLanguageSelect.value;
+        if (!text) {
+            alert("Please enter some lyrics to analyze!");
+            return;
+        }
+
+        // UI Loading State
+        analyzeBtn.disabled = true;
+        analyzeBtnText.textContent = "Analyzing...";
+        analyzeBtnIcon.textContent = "hourglass_bottom";
+        
+        statusIndicator.innerHTML = `
+            <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+            <span class="text-[10px] font-bold text-blue-500 uppercase">Processing</span>
+        `;
+        
+        analysisOutput.innerHTML = '<span class="text-slate-400 italic">Thinking...</span>';
+        moodOutput.innerHTML = '<span class="text-slate-400 italic">Thinking...</span>';
+        metaphorsOutput.innerHTML = '<span class="text-slate-400 italic">Thinking...</span>';
+        poetOutput.innerHTML = '<span class="text-slate-400 italic">Crafting translation...</span>';
+
+        try {
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chatInput: text, targetLanguage: targetLang }),
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errText}`);
+            }
+
+            const data = await response.json();
+            
+            // Re-format UI to Success State
+            statusIndicator.innerHTML = `
+                <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+                <span class="text-[10px] font-bold text-green-500 uppercase">Complete</span>
+            `;
+
+            // Display Results (replacing newlines with <br> for HTML rendering)
+            analysisOutput.innerHTML = (data.structure_output || "Structure missing.")
+                .replace(/\n/g, "<br>");
+                
+            moodOutput.innerHTML = (data.mood_output || "Mood missing.")
+                .replace(/\n/g, "<br>");
+                
+            metaphorsOutput.innerHTML = (data.metaphors_output || "Metaphors missing.")
+                .replace(/\n/g, "<br>");
+                
+            poetOutput.innerHTML = (data.poet_output || "Poem missing.")
+                .replace(/\n/g, "<br>");
+
+            // Persist data for Agent Pro page (also triggered on click, doing here as safety)
+            const songTitle = document.getElementById("song-title-input").value.trim() || "Untitled Song";
+            localStorage.setItem("lyricai_title", songTitle);
+            localStorage.setItem("lyricai_original", text);
+            localStorage.setItem("lyricai_structure", data.structure_output || "");
+            localStorage.setItem("lyricai_mood", data.mood_output || "");
+            localStorage.setItem("lyricai_translation", data.poet_output || "");
+            localStorage.setItem("lyricai_targetLang", targetLang);
+
+        } catch (error) {
+            console.error("Workflow Error:", error);
+            
+            statusIndicator.innerHTML = `
+                <span class="flex h-2 w-2 rounded-full bg-red-500"></span>
+                <span class="text-[10px] font-bold text-red-500 uppercase">Error</span>
+            `;
+
+            const errSpan = `<span class="text-red-500">Connection Failed: ${error.message}</span>`;
+            analysisOutput.innerHTML = errSpan;
+            moodOutput.innerHTML = errSpan;
+            metaphorsOutput.innerHTML = errSpan;
+            poetOutput.innerHTML = errSpan;
+        } finally {
+            // Restore button
+            analyzeBtn.disabled = false;
+            analyzeBtnText.textContent = "Analyze";
+            analyzeBtnIcon.textContent = "auto_awesome";
+        }
+    });
+</script>
+</body></html>

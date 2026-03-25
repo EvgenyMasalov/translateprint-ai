@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Patch scripts (one-time use)
+patch_*.py
+split_workflow.py
+add_editor_agent.py
+
+# Deprecated workflows
+n8n_workflow.json
+n8n_workflow_agent.json
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

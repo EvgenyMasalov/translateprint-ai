@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Literary AI Agent | The Tactile Manuscript</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed": "#f1ffd9",
+              "on-primary": "#ffefee",
+              "on-secondary-container": "#285a4c",
+              "primary": "#834c49",
+              "primary-fixed": "#ffb7b2",
+              "inverse-primary": "#ffb7b2",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-container": "#576346",
+              "surface-container-high": "#e0e2e9",
+              "secondary-fixed": "#b9eedb",
+              "surface-container": "#e6e8ee",
+              "surface": "#f5f6fb",
+              "on-tertiary-fixed-variant": "#616e50",
+              "inverse-surface": "#0c0e12",
+              "secondary-fixed-dim": "#abdfcd",
+              "tertiary": "#536043",
+              "outline-variant": "#abadb2",
+              "surface-container-highest": "#dadde4",
+              "on-primary-fixed-variant": "#703c3a",
+              "on-primary-container": "#653431",
+              "on-error": "#ffefec",
+              "on-error-container": "#520c00",
+              "secondary-dim": "#26584a",
+              "on-tertiary": "#eaf8d3",
+              "inverse-on-surface": "#9b9da1",
+              "tertiary-fixed-dim": "#e2f0cb",
+              "primary-container": "#ffb7b2",
+              "surface-container-low": "#eff1f6",
+              "surface-variant": "#dadde4",
+              "outline": "#75777b",
+              "on-tertiary-fixed": "#455135",
+              "on-surface-variant": "#595c60",
+              "on-primary-fixed": "#4d211f",
+              "secondary-container": "#b9eedb",
+              "on-secondary": "#c8feeb",
+              "tertiary-container": "#f1ffd9",
+              "tertiary-dim": "#485438",
+              "background": "#f5f6fb",
+              "error-container": "#f95630",
+              "surface-tint": "#834c49",
+              "secondary": "#336456",
+              "error": "#b02500",
+              "error-dim": "#b92902",
+              "primary-fixed-dim": "#f0aaa5",
+              "on-secondary-fixed-variant": "#336456",
+              "on-surface": "#2c2f33",
+              "surface-dim": "#d1d4dc",
+              "surface-bright": "#f5f6fb",
+              "on-background": "#2c2f33",
+              "on-secondary-fixed": "#12473a",
+              "primary-dim": "#75413e"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Be Vietnam Pro"],
+              "label": ["Be Vietnam Pro"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .clay-card {
+            box-shadow: 
+                20px 20px 40px 0 rgba(44, 47, 51, 0.06),
+                inset 4px 4px 12px rgba(255, 255, 255, 0.4),
+                inset -4px -4px 12px rgba(255, 183, 178, 0.2);
+        }
+        .clay-pill {
+            box-shadow: 
+                inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+                inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f6fb 0%, #ffefee 100%);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-[0_20px_40px_0_rgba(44,47,51,0.06)] border-none">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-extrabold text-[#834c49] dark:text-[#FFB7B2] font-headline tracking-tight">Agent</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-[#834c49] transition-all duration-300" href="index.html">Editor</a>
+<a class="text-[#834c49] dark:text-[#FFB7B2] border-b-4 border-[#FFB7B2] pb-1 font-bold tracking-tight" href="agent.html">Agent</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-[#834c49] transition-all duration-300" href="#">Help</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-[#834c49] transition-all duration-300" href="#">Collaborators</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#FFB7B2]/10 rounded-full transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined text-primary" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-28 pb-12 px-8 flex flex-col lg:flex-row gap-8 max-w-[1600px] mx-auto min-h-screen">
+<!-- Center Primary Card: The Manuscript -->
+<section class="flex-grow flex flex-col items-center justify-start py-8">
+<div class="w-full max-w-4xl clay-card bg-surface-container-lowest rounded-xl p-12 relative overflow-hidden">
+<!-- Decorative Icon -->
+<div class="absolute -top-6 -right-6 opacity-10 transform rotate-12 pointer-events-none">
+<span class="material-symbols-outlined text-[12rem]" data-icon="auto_stories">auto_stories</span>
+</div>
+<div class="relative z-10">
+<div class="mb-8 flex justify-between items-center">
+<span class="px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full text-sm font-bold tracking-wide flex items-center gap-2 clay-pill">
+<span class="material-symbols-outlined text-sm" data-icon="translate">translate</span>
+                            FRENCH TRANSLATION
+                        </span>
+<span class="text-on-surface-variant font-medium flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+                            Last synced: 2m ago
+                        </span>
+</div>
+<h1 class="font-headline text-4xl font-extrabold text-primary mb-10 leading-tight tracking-tight">
+                        La Vie en Rose (Modern Adaptation)
+                    </h1>
+<div class="space-y-6 text-xl text-on-surface leading-relaxed font-body">
+<p>Des yeux qui font baisser les miens,</p>
+<p>Un rire qui se perd sur sa bouche,</p>
+<p>Voilà le portrait sans retouche</p>
+<p>De l'homme auquel j'appartiens.</p>
+<div class="h-8"></div>
+<p>Quand il me prend dans ses bras,</p>
+<p>Il me parle tout bas,</p>
+<p>Je vois la vie en rose.</p>
+</div>
+<div class="mt-16 flex flex-col items-center gap-6">
+<button class="group flex items-center gap-3 px-10 py-5 bg-primary-container text-on-primary-container font-headline font-bold text-lg rounded-full clay-pill hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                            Analyze Manuscript
+                        </button>
+<p class="text-on-surface-variant text-sm font-medium italic opacity-70">Trigger AI linguistic analysis &amp; rhythmic refinement</p>
+</div>
+</div>
+</div>
+<!-- Floating Draft Bubble (Decorative) -->
+<div class="mt-12 flex items-center gap-4 px-6 py-3 bg-tertiary-container/40 rounded-full border border-outline-variant/10 shadow-sm backdrop-blur-sm animate-pulse">
+<span class="material-symbols-outlined text-tertiary" data-icon="lightbulb">lightbulb</span>
+<span class="text-on-tertiary-container font-medium text-sm">Drafting suggestion: Consider softening the third stanza's cadence...</span>
+</div>
+</section>
+<!-- Right Sidebar: Edited Results -->
+<aside class="w-full lg:w-[400px] shrink-0">
+<div class="sticky top-28 space-y-6">
+<!-- Sidebar Header -->
+<div class="flex items-center justify-between px-4">
+<h2 class="font-headline text-2xl font-bold text-primary">Edited Results</h2>
+<span class="material-symbols-outlined text-slate-400" data-icon="more_horiz">more_horiz</span>
+</div>
+<!-- Edited Text Card -->
+<div class="clay-card bg-secondary-fixed/30 rounded-lg p-8 border border-white/50 backdrop-blur-md">
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-headline text-lg font-bold text-secondary">Refined Translation</h3>
+<button class="p-2 bg-white/80 rounded-full shadow-sm hover:bg-white transition-all active:scale-90 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+<div id="result-body" class="space-y-4 text-secondary-dim font-medium leading-relaxed italic">
+<p>Eyes that make mine shyly fall,</p>
+<p>A smile that fades upon his lips,</p>
+<p>A portrait captured without flaw,</p>
+<p>The one to whom my heart belongs.</p>
+<p>...</p>
+<p>When he takes me in his arms,</p>
+<p>And whispers low to me,</p>
+<p>The world turns soft and rose.</p>
+</div>
+<div class="mt-8 pt-6 border-t border-secondary-fixed-dim/30">
+<div id="status-check" class="flex items-center gap-3 text-sm text-secondary">
+<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
+                            Rhythmic integrity verified
+                        </div>
+</div>
+</div>
+<!-- Action Section -->
+<div class="clay-card bg-surface-container-high/50 rounded-lg p-6 space-y-4">
+<p class="text-on-surface-variant text-sm text-center px-4">
+                        Requires deeper contextual mapping for poetic accuracy.
+                    </p>
+<button id="deep-analyze-btn" class="w-full py-4 bg-[#FFB7B2] text-white font-headline font-bold rounded-full shadow-lg transform -rotate-1 hover:rotate-0 transition-all duration-300 flex items-center justify-center gap-2 active:scale-95">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+                        Deep Analyze
+                    </button>
+</div>
+<!-- Mini History / Tags -->
+<div class="flex flex-wrap gap-2 px-2">
+<span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-bold text-slate-400 uppercase tracking-widest shadow-sm">V1.2</span>
+<span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-bold text-slate-400 uppercase tracking-widest shadow-sm">Poetic</span>
+<span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-bold text-slate-400 uppercase tracking-widest shadow-sm">Modern</span>
+</div>
+</div>
+</aside>
+</main>
+<!-- Ambient Occlusion / Soft Elements -->
+<div class="fixed bottom-12 left-12 w-32 h-32 bg-secondary-fixed/20 rounded-full blur-3xl -z-10"></div>
+<div class="fixed top-40 right-1/4 w-64 h-64 bg-primary-container/10 rounded-full blur-[100px] -z-10"></div>
+
+<!-- Agent Pro Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // UI Elements
+    const langBadge = document.querySelector(".bg-secondary-container.clay-pill");
+    const manuscriptBody = document.querySelector(".space-y-6.text-xl");
+    const analyzeBtn = document.querySelector("button.bg-primary-container");
+    const resultBody = document.getElementById("result-body");
+    const checkCircle = document.getElementById("status-check");
+    
+    // Context Data
+    const targetLang = localStorage.getItem("lyricai_targetLang") || "Target Language";
+    const songTitle = localStorage.getItem("lyricai_title") || "NAME TEXT SONG";
+    const translation = localStorage.getItem("lyricai_translation") || "No literal translation loaded. Please start from the Editor.";
+    const analysis = localStorage.getItem("lyricai_structure") || "None";
+    const mood = localStorage.getItem("lyricai_mood") || "None";
+    
+    // Headline Injection
+    const headline = document.querySelector("h1.font-headline");
+    if (headline) headline.innerText = songTitle;
+
+    // Initialization
+    if (langBadge) {
+        langBadge.innerHTML = `<span class="material-symbols-outlined text-sm">translate</span> ${targetLang.toUpperCase()} CLOSE TRANSLATION`;
+    }
+    if (manuscriptBody) {
+        manuscriptBody.innerHTML = translation.split('\n').map(line => 
+            line.trim() === '' ? '<div class="h-4"></div>' : `<p>${line}</p>`
+        ).join('');
+    }
+    if (resultBody) {
+        resultBody.innerHTML = "<p>Awaiting creative rhythm adaptation...</p>";
+    }
+    if (checkCircle) checkCircle.style.display = "none";
+
+    // Analyze Manuscript Actions
+    if(analyzeBtn) {
+        analyzeBtn.addEventListener("click", async () => {
+            // UI Loading State
+            const originalBtnText = analyzeBtn.innerHTML;
+            analyzeBtn.innerHTML = `<span class="material-symbols-outlined animate-spin font-bold text-2xl mr-2">progress_activity</span> Synthesizing Poetic Form...`;
+            analyzeBtn.disabled = true;
+            analyzeBtn.classList.add("opacity-50", "pointer-events-none");
+            
+            resultBody.innerHTML = `<div class="animate-pulse space-y-4"><div class="h-4 bg-[#b9eedb]/50 rounded w-3/4"></div><div class="h-4 bg-[#b9eedb]/50 rounded w-full"></div><div class="h-4 bg-[#b9eedb]/50 rounded w-5/6"></div><div class="h-4 bg-[#b9eedb]/50 rounded w-2/3"></div></div>`;
+
+            try {
+                const response = await fetch("http://localhost:5678/webhook/poet-agent", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        analysis: analysis,
+                        bridge: mood,
+                        targetLanguage: targetLang
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error("Workflow error.");
+                
+                checkCircle.style.display = "flex";
+                resultBody.innerHTML = (data.poet_output || "Poem missing.").split('\n').map(line => 
+                    line.trim() === '' ? '<div class="h-4"></div>' : `<p>${line}</p>`
+                ).join('');
+
+            } catch (err) {
+                console.error(err);
+                resultBody.innerHTML = `<p class="text-error font-bold text-sm">Connection failed. HTTP 500 or N8N webhook timeout.</p>`;
+            } finally {
+                analyzeBtn.innerHTML = originalBtnText;
+                analyzeBtn.disabled = false;
+                analyzeBtn.classList.remove("opacity-50", "pointer-events-none");
+            }
+        });
+    }
+    // --- Deep Analyze (Literary Editor via Claude Sonnet 4) ---
+    const deepAnalyzeBtn = document.getElementById("deep-analyze-btn");
+    const statusCheck = document.getElementById("status-check");
+    
+    if (deepAnalyzeBtn) {
+        deepAnalyzeBtn.addEventListener("click", async () => {
+            // Get the current Refined Translation text from sidebar
+            const currentPoetText = resultBody.innerText || resultBody.textContent;
+            if (!currentPoetText || currentPoetText.includes("Awaiting") || currentPoetText.includes("Connection failed")) {
+                alert("Please first generate a Refined Translation using Analyze Manuscript.");
+                return;
+            }
+
+            // UI Loading State
+            const originalBtnHtml = deepAnalyzeBtn.innerHTML;
+            deepAnalyzeBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-xl mr-2">progress_activity</span> Claude Sonnet is editing...`;
+            deepAnalyzeBtn.disabled = true;
+            deepAnalyzeBtn.classList.add("opacity-60", "pointer-events-none");
+            statusCheck.style.display = "none";
+
+            resultBody.innerHTML = `<div class="animate-pulse space-y-4"><div class="h-4 bg-[#FFB7B2]/30 rounded w-full"></div><div class="h-4 bg-[#FFB7B2]/30 rounded w-5/6"></div><div class="h-4 bg-[#FFB7B2]/30 rounded w-3/4"></div><div class="h-4 bg-[#FFB7B2]/30 rounded w-full"></div></div>`;
+
+            try {
+                const response = await fetch("http://localhost:5678/webhook/literary-editor", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        poetDraft: currentPoetText,
+                        structure: analysis,
+                        mood: mood,
+                        targetLanguage: targetLang
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error("Workflow error.");
+
+                resultBody.innerHTML = (data.editor_output || "Editor returned empty.").split('\n').map(line =>
+                    line.trim() === '' ? '<div class="h-4"></div>' : `<p>${line}</p>`
+                ).join('');
+                
+                statusCheck.innerHTML = `<span class="material-symbols-outlined text-base text-green-600">verified</span> <span class="text-green-600 font-bold">Polished by Claude Sonnet 4</span>`;
+                statusCheck.style.display = "flex";
+
+            } catch (err) {
+                console.error(err);
+                resultBody.innerHTML = `<p class="text-error font-bold text-sm">Deep Analyze failed: ${err.message}</p>`;
+            } finally {
+                deepAnalyzeBtn.innerHTML = originalBtnHtml;
+                deepAnalyzeBtn.disabled = false;
+                deepAnalyzeBtn.classList.remove("opacity-60", "pointer-events-none");
+            }
+        });
+    }
+});
+</script>
+</body></html>
