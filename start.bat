@@ -8,73 +8,57 @@ echo    LyricAI Studio - Application Launcher
 echo ============================================
 echo.
 
-:: --- [0/3] Cleanup zombie processes ------------------------------------------
-echo [0/3] Cleaning up existing processes on port 8080...
+:: --- [1/3] Cleanup zombie processes ------------------------------------------
+echo [1/3] Cleaning up existing processes...
 
-:: kill by port
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8080 ^| findstr LISTENING') do taskkill /F /PID %%a >nul 2>&1
+:: kill by port 8888 (frontend)
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8888 ^| findstr LISTENING') do taskkill /F /PID %%a >nul 2>&1
+:: kill by port 5678 (backend)
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5678 ^| findstr LISTENING') do taskkill /F /PID %%a >nul 2>&1
 
 :: kill by name (aggressive)
 taskkill /F /IM python.exe /FI "WINDOWTITLE eq LyricAI_Frontend*" >nul 2>&1
+taskkill /F /IM python.exe /FI "WINDOWTITLE eq LyricAI_Backend*" >nul 2>&1
 
-echo [OK] Port 8080 cleared.
+echo [OK] Ports cleared.
 
-:: --- [1/3] Check Docker and start n8n ----------------------------------------
+:: --- [2/3] Check Dependencies and Start Backend ------------------------------
 echo.
-echo [1/3] Checking Docker and n8n...
+echo [2/3] Installing dependencies and starting backend...
 
-docker info >nul 2>&1
-if errorlevel 1 (
-    echo [!] Docker is not running. Please start Docker Desktop first.
-    pause
-    exit /b 1
-)
-
-docker start n8n >nul 2>&1
-if errorlevel 1 (
-    echo [!] n8n container not found.
-    echo [!] Please create it first: docker run -d --name n8n -p 5678:5678 n8nio/n8n
-    pause
-    exit /b 1
-)
-
-:: Wait for n8n to be ready
-echo Waiting for n8n to be ready...
-set /a attempts=0
-:WAIT_N8N
-set /a attempts+=1
-if %attempts% GTR 30 (
-    echo [!] n8n timeout. Continuing anyway...
-    goto START_FRONTEND
-)
-powershell -NoProfile -Command "try { (Invoke-WebRequest -Uri 'http://localhost:5678/' -UseBasicParsing).StatusCode -eq 200 } catch { exit 1 }" >nul 2>&1
-if errorlevel 1 (
-    timeout /t 1 /nobreak >nul
-    goto WAIT_N8N
-)
-echo [OK] n8n is ready!
-
-:: --- [2/3] Starting Frontend -------------------------------------------------
-:START_FRONTEND
-echo.
-echo [2/3] Starting Frontend (Python HTTP Server)...
 cd /d "%~dp0"
-start "LyricAI_Frontend" /min cmd /c "chcp 65001 >nul && python -m http.server 8080 --bind 127.0.0.1"
+echo [*] Checking requirements.txt...
+pip install -qr requirements.txt
+if errorlevel 1 (
+    echo [!] Failed to install dependencies.
+    pause
+    exit /b 1
+)
 
-echo Waiting for Frontend (3 sec)...
+start "LyricAI_Backend" /min cmd /c "chcp 65001 >nul && uvicorn backend:app --host 0.0.0.0 --port 5678"
+
+echo Waiting for Backend (3 sec)...
 timeout /t 3 /nobreak >nul
 
-:: --- [3/3] Open browser ------------------------------------------------------
-echo [3/3] Opening browser...
-start "" "http://127.0.0.1:8080"
+:: --- [3/3] Starting Frontend -------------------------------------------------
+echo.
+echo [3/3] Starting Frontend (Python HTTP Server)...
+start "LyricAI_Frontend" /min cmd /c "chcp 65001 >nul && python -m http.server 8888 --bind 127.0.0.1"
+
+echo Waiting for Frontend (2 sec)...
+timeout /t 2 /nobreak >nul
+
+:: --- [Finished] Open browser -------------------------------------------------
+echo Opening browser...
+start "" "http://127.0.0.1:8888"
 
 echo.
 echo ============================================
-echo    LyricAI Studio is running!
+echo    LyricAI Studio is running (Native Python)
 echo.
-echo    Editor:    http://127.0.0.1:8080
-echo    Agent Pro: http://127.0.0.1:8080/agent.html
-echo    n8n:       http://localhost:5678
+echo    Editor:    http://127.0.0.1:8888
+echo    Agent Pro: http://127.0.0.1:8888/agent.html
+echo    Backend:   http://localhost:5678/docs
 echo ============================================
 pause
 exit
