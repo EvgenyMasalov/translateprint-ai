@@ -27,6 +27,17 @@ echo.
 echo [2/3] Installing dependencies and starting backend...
 
 cd /d "%~dp0"
+
+:: Check for .env file
+if not exist ".env" (
+    if exist ".env.example" (
+        echo [*] .env not found. Creating from .env.example...
+        copy .env.example .env >nul
+    ) else (
+        echo [!] Warning: .env and .env.example not found.
+    )
+)
+
 echo [*] Checking requirements.txt...
 pip install -qr requirements.txt
 if errorlevel 1 (
@@ -50,14 +61,14 @@ timeout /t 2 /nobreak >nul
 
 :: --- [Finished] Open browser -------------------------------------------------
 echo Opening browser...
-start "" "http://127.0.0.1:8888"
+start "" "http://127.0.0.1:8080"
 
 echo.
 echo ============================================
 echo    LyricAI Studio is running (Native Python)
 echo.
-echo    Editor:    http://127.0.0.1:8888
-echo    Agent Pro: http://127.0.0.1:8888/agent.html
+echo    Editor:    http://127.0.0.1:8080
+echo    Agent Pro: http://127.0.0.1:8080/agent.html
 echo    Backend:   http://localhost:5678/docs
 echo ============================================
 pause

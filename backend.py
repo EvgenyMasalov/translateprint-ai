@@ -1,11 +1,29 @@
 import asyncio
 import httpx
+import os
+import re
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
+from dotenv import load_dotenv
 
-app = FastAPI(title="LyricAI Studio Backend")
+# Load environment variables
+load_dotenv()
+
+API_KEY = os.getenv("POLZA_API_KEY", "your_api_key_here")
+BASE_URL = "https://polza.ai/api/v1/chat/completions"
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize a single httpx client for the entire app lifetime
+    # trust_env=False prevents picking up system proxy settings that might require auth (Error 407)
+    app.state.client = httpx.AsyncClient(timeout=120.0, trust_env=False)
+    yield
+    await app.state.client.aclose()
+
+app = FastAPI(title="LyricAI Studio Backend", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,9 +32,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-API_KEY = "pza_G_FZmM7EG9hndBPr_aDBU-aErTxCgJnm"
-BASE_URL = "https://polza.ai/api/v1/chat/completions"
 
 # --- Models ---
 class AnalyzeRequest(BaseModel):
@@ -29,6 +44,7 @@ class PoetRequest(BaseModel):
     targetLanguage: str
     literalTranslation: str
     originalLyrics: str
+    metaphors: str = "" # Optional field for metaphors
 
 class EditorRequest(BaseModel):
     poetDraft: str
@@ -50,13 +66,28 @@ async def call_llm(client: httpx.AsyncClient, model: str, prompt: str, temperatu
         ]
     }
     try:
-        response = await client.post(BASE_URL, headers=headers, json=payload, timeout=120.0)
+        response = await client.post(BASE_URL, headers=headers, json=payload)
         response.raise_for_status()
         data = response.json()
         return data["choices"][0]["message"]["content"]
     except Exception as e:
         print(f"Error calling LLM ({model}): {e}")
         return f"Error: {e}"
+
+def extract_section(text: str, header: str) -> str:
+    """Helper to extract sections using regex for better robustness."""
+    pattern = rf"\[{header}\](.*?)(?=\[|$)"
+    match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+    
+    # Fallback for "HEADER:" format
+    pattern_fallback = rf"{header}:(.*?)(?={header}|[A-Z]+:|$)"
+    match_fallback = re.search(pattern_fallback, text, re.DOTALL | re.IGNORECASE)
+    if match_fallback:
+        return match_fallback.group(1).strip()
+    
+    return ""
 
 # --- Webhooks ---
 @app.post("/webhook/analyze-lyrics")
@@ -85,31 +116,16 @@ Provide a literal, close-to-original semantic translation of the lyrics STRICTLY
 USER: Analyze and translate into {req.targetLanguage}:
 {req.chatInput}"""
 
-    async with httpx.AsyncClient() as client:
-        # Run both analysis and bridge requests concurrently
-        analyzer_task = call_llm(client, model, prompt_analyzer, 0.1)
-        bridge_task = call_llm(client, model, prompt_bridge, 0.1)
-        analysis_output, bridge_output = await asyncio.gather(analyzer_task, bridge_task)
+    # Run both analysis and bridge requests concurrently
+    analyzer_task = call_llm(app.state.client, model, prompt_analyzer, 0.1)
+    bridge_task = call_llm(app.state.client, model, prompt_bridge, 0.1)
+    analysis_output, bridge_output = await asyncio.gather(analyzer_task, bridge_task)
 
-    # Parse Analyzer Output
-    structure = analysis_output
-    metaphors = "No metaphors found."
-    meta_idx = analysis_output.find("[METAPHORS]")
-    if meta_idx != -1:
-        structure = analysis_output[:meta_idx].replace("[STRUCTURE]", "").strip()
-        metaphors = analysis_output[meta_idx:].replace("[METAPHORS]", "").strip()
-    elif "METAPHORS:" in analysis_output:
-        parts = analysis_output.split("METAPHORS:")
-        structure = parts[0].replace("STRUCTURE:", "").strip()
-        metaphors = parts[1].strip()
-
-    # Parse Bridge Output
-    mood = bridge_output
-    translation = bridge_output
-    trans_idx = bridge_output.find("[TRANSLATION]")
-    if trans_idx != -1:
-        mood = bridge_output[:trans_idx].replace("[MOOD]", "").strip()
-        translation = bridge_output[trans_idx:].replace("[TRANSLATION]", "").strip()
+    # Robust parsing
+    structure = extract_section(analysis_output, "STRUCTURE") or analysis_output
+    metaphors = extract_section(analysis_output, "METAPHORS") or "No metaphors found."
+    mood = extract_section(bridge_output, "MOOD") or bridge_output
+    translation = extract_section(bridge_output, "TRANSLATION") or bridge_output
 
     return {
         "structure_output": structure,
@@ -121,48 +137,55 @@ USER: Analyze and translate into {req.targetLanguage}:
 @app.post("/webhook/poet-agent")
 async def poet_agent(req: PoetRequest):
     model = "thedrummer/rocinante-12b"
-    prompt = f"""SYSTEM: You are Rocinante, a brilliant rock/pop songwriter. Craft final {req.targetLanguage} lyrics based on the emotional payload. Respect the syllable structure and keep the vibe authentic to {req.targetLanguage}.
+    # Added explicit requirement to use analyzed metaphors and mood
+    prompt = f"""SYSTEM: You are Rocinante, a Master Songwriter. Your mission is to transform a literal translation into a SINGABLE poetic masterpiece in {req.targetLanguage}.
 
-USER: Write {req.targetLanguage} song lyrics.
-Structure:
+CRITICAL REQUIREMENTS:
+1. STRICT ADHERENCE TO CONTENT: You MUST preserve every nuance of meaning from the [Literal Translation].
+2. RHYTHMIC INTEGRITY: Use the [Structure Analysis] as a rigid blueprint for syllable counts and meter.
+3. IMAGERY: Incorporate the specific [Key Metaphors] identified in the analysis.
+4. EMOTIONAL TONE: Maintain the exact [Mood] described below.
+
+USER:
+[Original Lyrics]
+{req.originalLyrics}
+
+[Literal Translation]
+{req.literalTranslation}
+
+[Structure Analysis]
 {req.analysis}
 
-Emotional meaning:
-{req.bridge}"""
+[Mood]
+{req.bridge}
 
-    async with httpx.AsyncClient() as client:
-        poet_output = await call_llm(client, model, prompt, 0.3)
+TASK: Write the final {req.targetLanguage} lyrics. No preamble, no comments. Output ONLY the song."""
+
+    poet_output = await call_llm(app.state.client, model, prompt, 0.3)
 
     return {"poet_output": poet_output}
 
 @app.post("/webhook/literary-editor")
 async def literary_editor(req: EditorRequest):
     model = "anthropic/claude-sonnet-4"
-    prompt = f"""SYSTEM: You are a Senior Literary Editor and Master Poet with decades of experience in songwriting across all genres and languages. Your task is to perform a FINAL SURGICAL POLISH on an already-crafted song translation.
+    prompt = f"""SYSTEM: You are a Senior Literary Editor and Master Poet. Perform a FINAL SURGICAL POLISH on the draft.
+Output ONLY the corrected song lyrics. No commentary.
 
 CRITICAL CONSTRAINTS:
-1. You MUST NOT alter the core meaning, emotional intent, or narrative arc of the text. The song's soul is sacred.
-2. You MUST preserve the existing syllable structure and rhythmic pattern as closely as possible.
-3. You may ONLY make the following types of corrections:
-   - Replace awkward or unnatural word choices with more elegant, singable alternatives
-   - Fix grammatical issues while keeping the poetic register
-   - Improve internal rhyme quality and consonance where it doesn't sacrifice meaning
-   - Smooth transitions between verses for better vocal flow
-   - Ensure cultural authenticity of idioms and expressions in {req.targetLanguage}
-4. Output ONLY the corrected song lyrics. No commentary, no explanations, no annotations.
-5. If the text is already excellent, return it unchanged. Do NOT change things for the sake of changing them.
+1. Preserve core meaning and emotional intent.
+2. Maintain syllable structure and rhythm.
+3. Improve singability and cultural authenticity in {req.targetLanguage}.
 
-STRUCTURAL REFERENCE (for rhythmic guidance):
+STRUCTURAL REFERENCE:
 {req.structure}
 
-EMOTIONAL REFERENCE (mood to preserve):
+EMOTIONAL REFERENCE:
 {req.mood}
 
-USER: Polish this {req.targetLanguage} song draft. Return ONLY the final lyrics:
+USER: Polish this {req.targetLanguage} song draft:
 {req.poetDraft}"""
 
-    async with httpx.AsyncClient() as client:
-        editor_output = await call_llm(client, model, prompt, 0.3)
+    editor_output = await call_llm(app.state.client, model, prompt, 0.3)
 
     return {"editor_output": editor_output}
 
