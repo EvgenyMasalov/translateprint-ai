@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>LyricAI - Join the Studio</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#B5EAD7",
+                        "accent": "#FFB7B2",
+                        "secondary": "#E2F0CB",
+                        "background-light": "#f6f8f7",
+                    },
+                    fontFamily: {
+                        "display": ["Nunito", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        .clay-card {
+            background: #ffffff;
+            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.04), 
+                        inset -4px -4px 8px rgba(0, 0, 0, 0.01),
+                        inset 4px 4px 8px rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .clay-card {
+            background: #1e293b;
+            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.2), 
+                        inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .clay-button {
+            background: #B5EAD7;
+            box-shadow: 4px 4px 10px rgba(181, 234, 215, 0.3), 
+                        inset -3px -3px 5px rgba(0, 0, 0, 0.05),
+                        inset 3px 3px 5px rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+        .clay-input {
+            background: #f1f5f4;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.04),
+                        inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+            border: none;
+        }
+        .dark .clay-input {
+            background: #0f172a;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.2),
+                        inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+        }
+    </style>
+    <script>
+        if (localStorage.getItem('lyricai_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-background-light dark:bg-slate-950 font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <div class="inline-flex size-12 clay-button items-center justify-center text-slate-700 rounded-2xl mb-4">
+                <span class="material-symbols-outlined text-2xl font-bold">auto_fix_high</span>
+            </div>
+            <h1 id="page-title" class="text-4xl font-black tracking-tight text-slate-800 dark:text-white">LyricAI <span class="text-[#FFB7B2] italic">Studio</span></h1>
+            <p id="page-desc" class="mt-2 text-slate-500 dark:text-slate-400 font-medium">Create your account to save your masterpieces</p>
+        </div>
+
+        <div class="clay-card p-8 rounded-3xl">
+            <!-- Tabs -->
+            <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-8">
+                <button id="tab-register" class="flex-1 py-2.5 text-xs font-black uppercase rounded-xl transition-all bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-white">Sign Up</button>
+                <button id="tab-login" class="flex-1 py-2.5 text-xs font-black uppercase rounded-xl transition-all text-slate-400 hover:text-slate-600">Log In</button>
+            </div>
+
+            <form id="registration-form" class="space-y-6">
+                <div id="name-fields" class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1">First Name</label>
+                        <input id="first_name" class="w-full clay-input rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="John" type="text"/>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Last Name</label>
+                        <input id="last_name" class="w-full clay-input rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Doe" type="text"/>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Email Address</label>
+                    <input id="email" required class="w-full clay-input rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="john@example.com" type="email"/>
+                </div>
+
+                <button id="submit-btn" type="submit" class="w-full clay-button py-3.5 rounded-2xl font-black text-slate-700 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
+                    CREATE ACCOUNT
+                </button>
+            </form>
+
+            <div class="relative my-8">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100 dark:border-slate-800"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white dark:bg-[#1e293b] px-2 text-slate-400 font-bold tracking-widest">OR CONTINUE WITH</span></div>
+            </div>
+
+            <button id="google-login-btn" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3.5 rounded-2xl font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="size-5" alt="Google">
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:5678";
+
+        if (localStorage.getItem('lyricai_token')) { window.location.replace('index.html'); }
+
+        let isLoginMode = false;
+        const form = document.getElementById('registration-form');
+        const tabRegister = document.getElementById('tab-register');
+        const tabLogin = document.getElementById('tab-login');
+        const nameFields = document.getElementById('name-fields');
+        const submitBtn = document.getElementById('submit-btn');
+        const pageTitle = document.getElementById('page-title');
+        const pageDesc = document.getElementById('page-desc');
+
+        function setMode(login) {
+            isLoginMode = login;
+            nameFields.classList.toggle('hidden', isLoginMode);
+            submitBtn.textContent = isLoginMode ? 'WELCOME BACK' : 'CREATE ACCOUNT';
+            pageDesc.textContent = isLoginMode ? 'Log in to access your projects' : 'Create your account to save your masterpieces';
+            
+            // Tab Styles
+            if (isLoginMode) {
+                tabLogin.classList.add('bg-white', 'dark:bg-slate-700', 'shadow-sm', 'text-slate-800', 'dark:text-white');
+                tabLogin.classList.remove('text-slate-400');
+                tabRegister.classList.remove('bg-white', 'dark:bg-slate-700', 'shadow-sm', 'text-slate-800', 'dark:text-white');
+                tabRegister.classList.add('text-slate-400');
+            } else {
+                tabRegister.classList.add('bg-white', 'dark:bg-slate-700', 'shadow-sm', 'text-slate-800', 'dark:text-white');
+                tabRegister.classList.remove('text-slate-400');
+                tabLogin.classList.remove('bg-white', 'dark:bg-slate-700', 'shadow-sm', 'text-slate-800', 'dark:text-white');
+                tabLogin.classList.add('text-slate-400');
+            }
+        }
+
+        tabRegister.onclick = () => setMode(false);
+        tabLogin.onclick = () => setMode(true);
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const endpoint = isLoginMode ? '/login' : '/register';
+            const data = { email: document.getElementById('email').value };
+            if (!isLoginMode) {
+                data.first_name = document.getElementById('first_name').value;
+                data.last_name = document.getElementById('last_name').value;
+                if (!data.first_name || !data.last_name) return alert('Full name required');
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const resData = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('lyricai_token', resData.access_token);
+                    window.location.replace('index.html');
+                } else {
+                    alert('Error: ' + (resData.detail || 'Failed'));
+                }
+            } catch (err) { alert('Failed to connect to server.'); }
+        };
+
+        document.getElementById('google-login-btn').onclick = () => {
+            window.location.replace(`${API_BASE}/auth/google`);
+        };
+
+        window.testConnection = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/ping`);
+                if (res.ok) alert("Connection OK!");
+                else alert("Server error: " + res.status);
+            } catch (err) { alert("Failed to fetch. Check proxy settings for 127.0.0.1"); }
+        };
+    </script>
+    <div class="fixed bottom-2 right-2 opacity-10 hover:opacity-100 transition-opacity">
+        <button onclick="testConnection()" class="text-[8px] bg-slate-200 p-1 rounded font-black uppercase">Net Test</button>
+    </div>
+</body>
+</html>

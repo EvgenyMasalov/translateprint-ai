@@ -1,442 +1,589 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Literary AI Agent | The Tactile Manuscript</title>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<!-- Icons -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "tertiary-fixed": "#f1ffd9",
-              "on-primary": "#ffefee",
-              "on-secondary-container": "#285a4c",
-              "primary": "#834c49",
-              "primary-fixed": "#ffb7b2",
-              "inverse-primary": "#ffb7b2",
-              "surface-container-lowest": "#ffffff",
-              "on-tertiary-container": "#576346",
-              "surface-container-high": "#e0e2e9",
-              "secondary-fixed": "#b9eedb",
-              "surface-container": "#e6e8ee",
-              "surface": "#f5f6fb",
-              "on-tertiary-fixed-variant": "#616e50",
-              "inverse-surface": "#0c0e12",
-              "secondary-fixed-dim": "#abdfcd",
-              "tertiary": "#536043",
-              "outline-variant": "#abadb2",
-              "surface-container-highest": "#dadde4",
-              "on-primary-fixed-variant": "#703c3a",
-              "on-primary-container": "#653431",
-              "on-error": "#ffefec",
-              "on-error-container": "#520c00",
-              "secondary-dim": "#26584a",
-              "on-tertiary": "#eaf8d3",
-              "inverse-on-surface": "#9b9da1",
-              "tertiary-fixed-dim": "#e2f0cb",
-              "primary-container": "#ffb7b2",
-              "surface-container-low": "#eff1f6",
-              "surface-variant": "#dadde4",
-              "outline": "#75777b",
-              "on-tertiary-fixed": "#455135",
-              "on-surface-variant": "#595c60",
-              "on-primary-fixed": "#4d211f",
-              "secondary-container": "#b9eedb",
-              "on-secondary": "#c8feeb",
-              "tertiary-container": "#f1ffd9",
-              "tertiary-dim": "#485438",
-              "background": "#f5f6fb",
-              "error-container": "#f95630",
-              "surface-tint": "#834c49",
-              "secondary": "#336456",
-              "error": "#b02500",
-              "error-dim": "#b92902",
-              "primary-fixed-dim": "#f0aaa5",
-              "on-secondary-fixed-variant": "#336456",
-              "on-surface": "#2c2f33",
-              "surface-dim": "#d1d4dc",
-              "surface-bright": "#f5f6fb",
-              "on-background": "#2c2f33",
-              "on-secondary-fixed": "#12473a",
-              "primary-dim": "#75413e"
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Literary AI Agent | The Tactile Manuscript</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#B5EAD7",
+                        "accent": "#FFB7B2",
+                        "secondary": "#E2F0CB",
+                        "surface": "#f6f8f7",
+                        "on-surface": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Nunito", "sans-serif"],
+                        "body": ["Nunito", "sans-serif"],
+                        "headline": ["Nunito", "sans-serif"],
+                    },
+                },
             },
-            fontFamily: {
-              "headline": ["Plus Jakarta Sans"],
-              "body": ["Be Vietnam Pro"],
-              "label": ["Be Vietnam Pro"]
-            },
-            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
-          },
-        },
-      }
+        }
     </script>
-<style>
+    <style type="text/tailwindcss">
         .clay-card {
-            box-shadow: 
-                20px 20px 40px 0 rgba(44, 47, 51, 0.06),
-                inset 4px 4px 12px rgba(255, 255, 255, 0.4),
-                inset -4px -4px 12px rgba(255, 183, 178, 0.2);
+            background: #ffffff;
+            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.04), 
+                        inset -4px -4px 8px rgba(0, 0, 0, 0.01),
+                        inset 4px 4px 8px rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
-        .clay-pill {
-            box-shadow: 
-                inset 2px 2px 4px rgba(255, 255, 255, 0.3),
-                inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+        .dark .clay-card {
+            background: rgba(30, 41, 59, 0.5);
+            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.2), 
+                        inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
         }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
+        .clay-button {
+            background: #B5EAD7;
+            box-shadow: 4px 4px 10px rgba(181, 234, 215, 0.3), 
+                        inset -3px -3px 5px rgba(0, 0, 0, 0.05),
+                        inset 3px 3px 5px rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
         }
-        body {
-            background: linear-gradient(135deg, #f5f6fb 0%, #ffefee 100%);
+        .clay-input {
+            background: #f1f5f4;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.04),
+                        inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+            border: none;
         }
+        .dark .clay-input {
+            background: #0f172a;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.2),
+                        inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+        }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        
+        body { background: linear-gradient(135deg, #f5f6fb 0%, #ffefee 100%); }
+        .dark body { background: linear-gradient(135deg, #0d1613 0%, #1a0f0e 100%); }
     </style>
+    <script>
+        if (localStorage.getItem('lyricai_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body class="font-body text-on-surface min-h-screen">
-<!-- TopNavBar -->
-<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-[0_20px_40px_0_rgba(44,47,51,0.06)] border-none">
-<div class="flex items-center gap-8">
-<span class="text-2xl font-extrabold text-[#834c49] dark:text-[#FFB7B2] font-headline tracking-tight">Agent</span>
-<div class="hidden md:flex gap-6 items-center">
-<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-[#834c49] transition-all duration-300" href="index.html">Editor</a>
-<a class="text-[#834c49] dark:text-[#FFB7B2] border-b-4 border-[#FFB7B2] pb-1 font-bold tracking-tight" href="agent.html">Agent</a>
-<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-[#834c49] transition-all duration-300" href="#">Help</a>
-<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-[#834c49] transition-all duration-300" href="#">Collaborators</a>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<button class="p-2 hover:bg-[#FFB7B2]/10 rounded-full transition-all duration-300 active:scale-95">
-<span class="material-symbols-outlined text-primary" data-icon="account_circle">account_circle</span>
-</button>
-</div>
+<body class="font-body text-on-surface dark:text-slate-200 min-h-screen pt-20">
+
+<!-- Nav -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800">
+    <div class="flex items-center gap-8">
+        <div class="flex items-center gap-2">
+            <div class="size-8 clay-button flex items-center justify-center text-slate-700 rounded-lg">
+                <span class="material-symbols-outlined text-sm font-bold">auto_fix_high</span>
+            </div>
+            <span class="text-2xl font-extrabold text-[#834c49] dark:text-[#FFB7B2] font-headline tracking-tight">Agent <span class="italic text-[#FFB7B2]">PRO</span></span>
+        </div>
+        <div class="hidden md:flex gap-6 items-center text-sm font-medium">
+            <a class="text-slate-500 hover:text-primary transition-colors" href="index.html">Editor</a>
+            <a class="text-primary font-bold border-b-2 border-primary" href="agent.html">Agent</a>
+        </div>
+    </div>
+    <div class="flex items-center gap-4">
+        <button id="toggle-library-btn" class="size-9 clay-button flex items-center justify-center text-slate-700 rounded-full border-2 border-primary/20 ring-4 ring-white shadow-sm">
+            <span class="material-symbols-outlined text-lg">library_music</span>
+        </button>
+        <div id="user-info" class="hidden flex items-center gap-4">
+            <div class="flex flex-col items-end">
+                <span id="user-name" class="text-xs font-bold"></span>
+                <button id="logout-btn" class="text-[10px] font-bold text-slate-400 uppercase">Logout</button>
+            </div>
+            <div class="size-9 rounded-full border-2 border-primary/20 bg-slate-200 overflow-hidden cursor-pointer" id="avatar-click-zone">
+                <img id="user-avatar" class="w-full h-full object-cover" src=""/>
+            </div>
+        </div>
+        <div id="auth-links" class="flex items-center gap-4">
+            <a href="registration.html" class="size-9 clay-button flex items-center justify-center text-slate-700 rounded-full border-2 border-primary/20 ring-4 ring-white shadow-sm">
+                <span class="material-symbols-outlined text-lg">person</span>
+            </a>
+        </div>
+    </div>
 </nav>
-<!-- Main Content Canvas -->
-<main class="pt-28 pb-12 px-8 flex flex-col lg:flex-row gap-8 max-w-[1600px] mx-auto min-h-screen">
-<!-- Center Primary Card: The Manuscript -->
-<section class="flex-grow flex flex-col items-center justify-start py-8">
-<div class="w-full max-w-4xl clay-card bg-surface-container-lowest rounded-xl p-12 relative overflow-hidden">
-<!-- Decorative Icon -->
-<div class="absolute -top-6 -right-6 opacity-10 transform rotate-12 pointer-events-none">
-<span class="material-symbols-outlined text-[12rem]" data-icon="auto_stories">auto_stories</span>
-</div>
-<div class="relative z-10">
-<div class="mb-8 flex justify-between items-center">
-<span class="px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full text-sm font-bold tracking-wide flex items-center gap-2 clay-pill">
-<span class="material-symbols-outlined text-sm" data-icon="translate">translate</span>
-                            FRENCH TRANSLATION
-                        </span>
-<span class="text-on-surface-variant font-medium flex items-center gap-2">
-<span class="material-symbols-outlined" data-icon="timer">timer</span>
-                            Last synced: 2m ago
-                        </span>
-</div>
-<h1 class="font-headline text-4xl font-extrabold text-primary mb-10 leading-tight tracking-tight">
-                        La Vie en Rose (Modern Adaptation)
-                    </h1>
-<div class="space-y-6 text-xl text-on-surface leading-relaxed font-body">
-<p>Des yeux qui font baisser les miens,</p>
-<p>Un rire qui se perd sur sa bouche,</p>
-<p>Voilà le portrait sans retouche</p>
-<p>De l'homme auquel j'appartiens.</p>
-<div class="h-8"></div>
-<p>Quand il me prend dans ses bras,</p>
-<p>Il me parle tout bas,</p>
-<p>Je vois la vie en rose.</p>
-</div>
-<div class="mt-16 flex flex-col items-center gap-6">
-<div class="flex items-center gap-4">
-<button class="group flex items-center gap-3 px-10 py-5 bg-primary-container text-on-primary-container font-headline font-bold text-lg rounded-full clay-pill hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg" onclick="analyzeManuscript()">
-<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-                            Analyze Manuscript
-                        </button>
-<button id="export-report-btn" class="p-5 bg-tertiary-container text-on-tertiary-container rounded-full clay-pill hover:scale-110 active:scale-90 transition-all duration-300 shadow-md group relative">
-<span class="material-symbols-outlined" data-icon="download">download</span>
-<span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Export Full Report (.txt)</span>
-</button>
-</div>
-<p class="text-on-surface-variant text-sm font-medium italic opacity-70">Trigger AI linguistic analysis &amp; rhythmic refinement</p>
-</div>
-</div>
-</div>
-<!-- Floating Draft Bubble (Decorative) -->
-<div class="mt-12 flex items-center gap-4 px-6 py-3 bg-tertiary-container/40 rounded-full border border-outline-variant/10 shadow-sm backdrop-blur-sm animate-pulse">
-<span class="material-symbols-outlined text-tertiary" data-icon="lightbulb">lightbulb</span>
-<span class="text-on-tertiary-container font-medium text-sm">Drafting suggestion: Consider softening the third stanza's cadence...</span>
-</div>
-</section>
-<!-- Right Sidebar: Edited Results -->
-<aside class="w-full lg:w-[400px] shrink-0">
-<div class="sticky top-28 space-y-6">
-<!-- Sidebar Header -->
-<div class="flex items-center justify-between px-4">
-<h2 class="font-headline text-2xl font-bold text-primary">Edited Results</h2>
-<span class="material-symbols-outlined text-slate-400" data-icon="more_horiz">more_horiz</span>
-</div>
-<!-- Edited Text Card -->
-<div class="clay-card bg-secondary-fixed/30 rounded-lg p-8 border border-white/50 backdrop-blur-md">
-<div class="flex justify-between items-start mb-6">
-<h3 class="font-headline text-lg font-bold text-secondary">Refined Translation</h3>
-<button id="copy-refined-btn" class="p-2 bg-white/80 rounded-full shadow-sm hover:bg-white transition-all active:scale-90 flex items-center justify-center">
-<span class="material-symbols-outlined text-secondary text-xl" data-icon="content_copy">content_copy</span>
-</button>
-</div>
-<div id="result-body" class="space-y-4 text-secondary-dim font-medium leading-relaxed italic">
-<p>Eyes that make mine shyly fall,</p>
-<p>A smile that fades upon his lips,</p>
-<p>A portrait captured without flaw,</p>
-<p>The one to whom my heart belongs.</p>
-<p>...</p>
-<p>When he takes me in his arms,</p>
-<p>And whispers low to me,</p>
-<p>The world turns soft and rose.</p>
-</div>
-<div class="mt-8 pt-6 border-t border-secondary-fixed-dim/30">
-<div id="status-check" class="flex items-center gap-3 text-sm text-secondary">
-<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
-                            Rhythmic integrity verified
-                        </div>
-</div>
-</div>
-<!-- Action Section -->
-<div class="clay-card bg-surface-container-high/50 rounded-lg p-6 space-y-4">
-<p class="text-on-surface-variant text-sm text-center px-4">
-                        Requires deeper contextual mapping for poetic accuracy.
-                    </p>
-<button id="deep-analyze-btn" class="w-full py-4 bg-[#FFB7B2] text-white font-headline font-bold rounded-full shadow-lg transform -rotate-1 hover:rotate-0 transition-all duration-300 flex items-center justify-center gap-2 active:scale-95">
-<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
-                        Deep Analyze
-                    </button>
-</div>
-<!-- Mini History / Tags -->
-<div class="flex flex-wrap gap-2 px-2">
-<span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-bold text-slate-400 uppercase tracking-widest shadow-sm">V1.2</span>
-<span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-bold text-slate-400 uppercase tracking-widest shadow-sm">Poetic</span>
-<span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-bold text-slate-400 uppercase tracking-widest shadow-sm">Modern</span>
-</div>
-</div>
-</aside>
+
+<main class="max-w-6xl mx-auto p-8 flex flex-col lg:flex-row gap-8">
+    <!-- Left: Manuscript -->
+    <section class="flex-1">
+        <div class="clay-card p-12 rounded-3xl relative overflow-hidden bg-white dark:bg-slate-900">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="px-4 py-1.5 bg-secondary/30 rounded-full text-[10px] font-black uppercase tracking-widest text-secondary-dim flex items-center gap-2" id="lang-badge">
+                    <span class="material-symbols-outlined text-sm">translate</span> LOADING...
+                </div>
+            </div>
+            <h1 id="song-title-display" class="text-4xl font-black text-slate-800 dark:text-white mb-8 leading-tight">Loading Song...</h1>
+            <div id="manuscript-body" class="space-y-4 text-xl leading-relaxed text-slate-600 dark:text-slate-300 italic">
+                Awaiting content from Editor...
+            </div>
+            <div class="mt-12 flex gap-4">
+                <button onclick="analyzeManuscript()" id="analyze-manuscript-btn" class="clay-button px-8 py-4 rounded-2xl font-black text-slate-700 flex items-center gap-3 hover:scale-[1.02] transition-all">
+                    <span class="material-symbols-outlined">auto_awesome</span> ANALYZE MANUSCRIPT
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Right: Results -->
+    <aside class="w-full lg:w-[400px] space-y-6">
+        <div class="clay-card p-8 rounded-3xl bg-white dark:bg-slate-900 relative">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Edited Results</h2>
+                <div id="status-check" class="hidden items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
+                    <span class="material-symbols-outlined text-green-600 text-xs">verified</span>
+                    <span class="text-[10px] font-bold text-green-600 uppercase">Verified</span>
+                </div>
+            </div>
+            <div id="result-body" contenteditable="true" class="space-y-4 text-sm font-medium text-slate-700 dark:text-slate-300 italic bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 min-h-[300px] outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+                Awaiting creative adaptation...
+            </div>
+            <div class="mt-6 flex flex-col gap-3">
+                <button id="deep-analyze-btn" class="w-full bg-[#FFB7B2] py-3 rounded-xl font-bold text-slate-700 flex items-center justify-center gap-2 hover:opacity-90">
+                    <span class="material-symbols-outlined">psychology</span> POLISH BY CLAUDE
+                </button>
+                <div class="flex gap-2">
+                    <button id="copy-refined-btn" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-black uppercase hover:bg-slate-200 transition-colors">Copy</button>
+                    <button id="export-report-btn" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-black uppercase hover:bg-slate-200 transition-colors">Export</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MUSICAL HARMONY CARD -->
+        <div class="clay-card dark:bg-slate-900/50 p-6 rounded-3xl border-l-4 border-accent bg-white">
+            <div class="flex items-start gap-3 mb-4">
+                <div class="size-8 rounded-xl bg-accent/20 flex items-center justify-center text-slate-700 shrink-0">
+                    <span class="material-symbols-outlined text-lg">music_note</span>
+                </div>
+                <div class="flex-1 flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Musical Harmony</p>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm" id="harmony-key">Awaiting harmony...</h4>
+                    </div>
+                    <div class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg text-[10px] font-black text-slate-500" id="harmony-bpm">0 BPM</div>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Verse Chords</p>
+                    <p id="chords-verse" class="text-xs font-mono font-bold text-primary dark:text-primary tracking-widest bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">---</p>
+                </div>
+                <div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Chorus Chords</p>
+                    <p id="chords-chorus" class="text-xs font-mono font-bold text-accent tracking-widest bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">---</p>
+                </div>
+            </div>
+        </div>
+    </aside>
 </main>
-<!-- Ambient Occlusion / Soft Elements -->
-<div class="fixed bottom-12 left-12 w-32 h-32 bg-secondary-fixed/20 rounded-full blur-3xl -z-10"></div>
-<div class="fixed top-40 right-1/4 w-64 h-64 bg-primary-container/10 rounded-full blur-[100px] -z-10"></div>
 
-<!-- Agent Pro Logic -->
+<!-- Sidebar & Modal -->
+<div id="library-sidebar" class="fixed inset-y-0 left-0 w-80 bg-white dark:bg-slate-900 shadow-2xl z-[60] transform -translate-x-full transition-transform duration-300 flex flex-col border-r dark:border-slate-800">
+    <div class="p-6 border-b dark:border-slate-800 flex justify-between items-center">
+        <h2 class="text-xl font-black flex items-center gap-2"><span class="material-symbols-outlined text-accent">library_music</span> My Songs</h2>
+        <button id="close-library-btn"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <!-- Search Bar -->
+    <div class="px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border-b dark:border-slate-800">
+        <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+            <input id="library-search-input" type="text" placeholder="Search songs..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none transition-all dark:text-slate-200">
+        </div>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-3" id="song-list-container"></div>
+</div>
+<div id="library-overlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[55] hidden"></div>
+
+<!-- Profile Modal -->
+<div id="profile-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
+    <div id="profile-overlay" class="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></div>
+    <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 clay-card shadow-2xl" id="profile-card">
+        <h2 class="text-3xl font-black mb-8">Profile <span class="text-accent italic">Settings</span></h2>
+        <div id="modal-content" class="space-y-6">
+            <div class="flex flex-col items-center gap-4">
+                <img id="modal-user-avatar" class="size-20 rounded-full border-4 border-primary/20" src=""/>
+                <p id="modal-user-email" class="text-xs font-black text-slate-400 uppercase"></p>
+            </div>
+            <div class="p-6 bg-slate-50 dark:bg-slate-950 rounded-2xl border dark:border-slate-800 text-center">
+                <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Songs Saved</p>
+                <p id="stat-total-songs" class="text-2xl font-black text-primary">0</p>
+            </div>
+            <button id="theme-toggle-btn" class="w-full py-4 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">dark_mode</span> TOGGLE THEME
+            </button>
+            <button id="modal-logout-btn" class="w-full text-xs font-black text-slate-300 uppercase">Logout</button>
+        </div>
+    </div>
+</div>
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    // UI Elements
-    const langBadge = document.querySelector(".bg-secondary-container.clay-pill");
-    const manuscriptBody = document.querySelector(".space-y-6.text-xl");
-    const analyzeBtn = document.querySelector("button.bg-primary-container");
-    const resultBody = document.getElementById("result-body");
-    const checkCircle = document.getElementById("status-check");
-    
-    // Context Data
-    const targetLang = localStorage.getItem("lyricai_targetLang") || "Target Language";
-    const songTitle = localStorage.getItem("lyricai_title") || "NAME TEXT SONG";
-    const translation = localStorage.getItem("lyricai_translation") || "No literal translation loaded. Please start from the Editor.";
-    const analysis = localStorage.getItem("lyricai_structure") || "None";
-    const mood = localStorage.getItem("lyricai_mood") || "None";
-    const metaphors = localStorage.getItem("lyricai_metaphors") || "None";
-    const originalLyrics = localStorage.getItem("lyricai_original") || "None";
-    
-    // Headline Injection
-    const headline = document.querySelector("h1.font-headline");
-    if (headline) headline.innerText = songTitle;
+    const API_BASE = "http://127.0.0.1:5678";
 
-    // Initialization
-    if (langBadge) {
-        langBadge.innerHTML = `<span class="material-symbols-outlined text-sm">translate</span> ${targetLang.toUpperCase()} CLOSE TRANSLATION`;
+    // Core Fetch Wrapper
+    async function apiFetch(path, options = {}) {
+        const token = localStorage.getItem('lyricai_token');
+        const headers = { ...options.headers };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        try {
+            const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+            if (response.status === 401) { window.location.href = 'registration.html'; return null; }
+            return response;
+        } catch (err) { console.error('API Error:', err); return null; }
     }
-    if (manuscriptBody) {
-        manuscriptBody.innerHTML = translation.split('\n').map(line => 
-            line.trim() === '' ? '<div class="h-4"></div>' : `<p>${line}</p>`
-        ).join('');
-    }
-    if (resultBody) {
-        resultBody.innerHTML = "<p>Awaiting creative rhythm adaptation...</p>";
-    }
-    if (checkCircle) checkCircle.style.display = "none";
 
-    // Analyze Manuscript Actions
+    // Auth & Session
+    async function checkSession() {
+        const response = await apiFetch('/me');
+        if (response && response.ok) {
+            const user = await response.json();
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('auth-links').classList.add('hidden');
+            document.getElementById('user-name').textContent = `${user.first_name} ${user.last_name}`;
+            document.getElementById('user-avatar').src = user.avatar_url || `https://ui-avatars.com/api/?name=${user.first_name}+${user.last_name}&background=B5EAD7`;
+            return user;
+        }
+        return null;
+    }
+
+    // Song Loading
+    function loadSongData() {
+        const title = localStorage.getItem("lyricai_title") || "Untitled Song";
+        const translation = localStorage.getItem("lyricai_translation") || "No translation found.";
+        const targetLang = localStorage.getItem("lyricai_targetLang") || "English";
+        const refined = localStorage.getItem("lyricai_refined") || "";
+
+
+        document.getElementById('song-title-display').textContent = title;
+        document.getElementById('lang-badge').innerHTML = `<span class="material-symbols-outlined text-sm">translate</span> ${targetLang.toUpperCase()} TRANSLATION`;
+        document.getElementById('manuscript-body').innerHTML = translation.split('\n').map(l => `<p>${l}</p>`).join('');
+
+        if (refined) {
+            document.getElementById('result-body').innerHTML = refined.split('\n').map(l => `<p>${l}</p>`).join('');
+            document.getElementById('status-check').classList.remove('hidden');
+            document.getElementById('status-check').innerHTML = `<span class="material-symbols-outlined text-green-600 text-xs">verified</span> <span class="text-[10px] font-bold text-green-600 uppercase">Restored from DB</span>`;
+            document.getElementById('status-check').style.display = 'flex';
+        }
+    }
+
     window.analyzeManuscript = async () => {
-        if(!analyzeBtn) return;
-            // UI Loading State
-            const originalBtnText = analyzeBtn.innerHTML;
-            analyzeBtn.innerHTML = `<span class="material-symbols-outlined animate-spin font-bold text-2xl mr-2">progress_activity</span> Synthesizing Poetic Form...`;
-            analyzeBtn.disabled = true;
-            analyzeBtn.classList.add("opacity-50", "pointer-events-none");
-            
-            resultBody.innerHTML = `<div class="animate-pulse space-y-4"><div class="h-4 bg-[#b9eedb]/50 rounded w-3/4"></div><div class="h-4 bg-[#b9eedb]/50 rounded w-full"></div><div class="h-4 bg-[#b9eedb]/50 rounded w-5/6"></div><div class="h-4 bg-[#b9eedb]/50 rounded w-2/3"></div></div>`;
+        const btn = document.getElementById('analyze-manuscript-btn');
+        const resBody = document.getElementById('result-body');
+        const originalText = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> ANALYZING...`;
+        resBody.innerHTML = `<div class="animate-pulse space-y-2"><div class="h-4 bg-slate-200 rounded w-3/4"></div><div class="h-4 bg-slate-200 rounded"></div></div>`;
 
-            try {
-                const response = await fetch("http://localhost:5678/webhook/poet-agent", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        analysis: analysis,
-                        bridge: mood,
-                        targetLanguage: targetLang,
-                        literalTranslation: translation,
-                        originalLyrics: originalLyrics,
-                        metaphors: metaphors // Added metaphors to the request
-                    })
-                });
+        const payload = {
+            analysis: localStorage.getItem("lyricai_structure") || "",
+            bridge: localStorage.getItem("lyricai_mood") || "",
+            targetLanguage: localStorage.getItem("lyricai_targetLang") || "English",
+            literalTranslation: localStorage.getItem("lyricai_translation") || "",
+            originalLyrics: localStorage.getItem("lyricai_original") || "",
+            metaphors: localStorage.getItem("lyricai_metaphors") || ""
+        };
 
-                const data = await response.json();
-                if (!response.ok) throw new Error("Workflow error.");
-                
-                checkCircle.style.display = "flex";
-                resultBody.innerHTML = (data.poet_output || "Poem missing.").split('\n').map(line => 
-                    line.trim() === '' ? '<div class="h-4"></div>' : `<p>${line}</p>`
-                ).join('');
-
-            } catch (err) {
-                console.error(err);
-                resultBody.innerHTML = `<p class="text-error font-bold text-sm">Connection failed. HTTP 500 or N8N webhook timeout.</p>`;
-            } finally {
-                analyzeBtn.innerHTML = originalBtnText;
-                analyzeBtn.disabled = false;
-                analyzeBtn.classList.remove("opacity-50", "pointer-events-none");
-            }
-    };
-    // --- Deep Analyze (Literary Editor via Claude Sonnet 4) ---
-    const deepAnalyzeBtn = document.getElementById("deep-analyze-btn");
-    const statusCheck = document.getElementById("status-check");
-    
-    if (deepAnalyzeBtn) {
-        deepAnalyzeBtn.addEventListener("click", async () => {
-            // Get the current Refined Translation text from sidebar
-            const currentPoetText = resultBody.innerText || resultBody.textContent;
-            if (!currentPoetText || currentPoetText.includes("Awaiting") || currentPoetText.includes("Connection failed")) {
-                alert("Please first generate a Refined Translation using Analyze Manuscript.");
-                return;
-            }
-
-            // UI Loading State
-            const originalBtnHtml = deepAnalyzeBtn.innerHTML;
-            deepAnalyzeBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-xl mr-2">progress_activity</span> Claude Sonnet is editing...`;
-            deepAnalyzeBtn.disabled = true;
-            deepAnalyzeBtn.classList.add("opacity-60", "pointer-events-none");
-            statusCheck.style.display = "none";
-
-            resultBody.innerHTML = `<div class="animate-pulse space-y-4"><div class="h-4 bg-[#FFB7B2]/30 rounded w-full"></div><div class="h-4 bg-[#FFB7B2]/30 rounded w-5/6"></div><div class="h-4 bg-[#FFB7B2]/30 rounded w-3/4"></div><div class="h-4 bg-[#FFB7B2]/30 rounded w-full"></div></div>`;
-
-            try {
-                const response = await fetch("http://localhost:5678/webhook/literary-editor", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        poetDraft: currentPoetText,
-                        structure: analysis,
-                        mood: mood,
-                        targetLanguage: targetLang
-                    })
-                });
-
-                const data = await response.json();
-                if (!response.ok) throw new Error("Workflow error.");
-
-                resultBody.innerHTML = (data.editor_output || "Editor returned empty.").split('\n').map(line =>
-                    line.trim() === '' ? '<div class="h-4"></div>' : `<p>${line}</p>`
-                ).join('');
-                
-                statusCheck.innerHTML = `<span class="material-symbols-outlined text-base text-green-600">verified</span> <span class="text-green-600 font-bold">Polished by Claude Sonnet 4</span>`;
-                statusCheck.style.display = "flex";
-
-            } catch (err) {
-                console.error(err);
-                resultBody.innerHTML = `<p class="text-error font-bold text-sm">Deep Analyze failed: ${err.message}</p>`;
-            } finally {
-                deepAnalyzeBtn.innerHTML = originalBtnHtml;
-                deepAnalyzeBtn.disabled = false;
-                deepAnalyzeBtn.classList.remove("opacity-60", "pointer-events-none");
-            }
+        const response = await fetch(`${API_BASE}/webhook/poet-agent`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
+
+        if (response.ok) {
+            const data = await response.json();
+            resBody.innerHTML = data.poet_output.split('\n').map(l => `<p>${l}</p>`).join('');
+            localStorage.setItem("lyricai_refined", data.poet_output);
+            autoSave(data.poet_output);
+            document.getElementById('status-check').classList.remove('hidden');
+            document.getElementById('status-check').style.display = 'flex';
+        } else { resBody.innerHTML = "Analysis failed."; }
+        
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    };
+
+    // Deep Analyze (Claude)
+    document.getElementById('deep-analyze-btn').onclick = async () => {
+        const resBody = document.getElementById('result-body');
+        const currentText = resBody.innerText;
+        if (!currentText || currentText.includes("Awaiting")) return alert("Analyze manuscript first!");
+
+        const btn = document.getElementById('deep-analyze-btn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> POLISHING...`;
+
+        const payload = {
+            poetDraft: currentText,
+            structure: localStorage.getItem("lyricai_structure") || "",
+            mood: localStorage.getItem("lyricai_mood") || "",
+            targetLanguage: localStorage.getItem("lyricai_targetLang") || "English"
+        };
+
+        const response = await fetch(`${API_BASE}/webhook/literary-editor`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            resBody.innerHTML = data.editor_output.split('\n').map(l => `<p>${l}</p>`).join('');
+            localStorage.setItem("lyricai_refined", data.editor_output);
+            autoSave(data.editor_output);
+            document.getElementById('status-check').innerHTML = `<span class="material-symbols-outlined text-green-600 text-xs">verified</span> <span class="text-[10px] font-bold text-green-600 uppercase">Polished by Claude</span>`;
+        } else { alert("Deep analysis failed."); }
+
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    };
+
+    // Copy & Export
+    document.getElementById('copy-refined-btn').onclick = () => {
+        const text = document.getElementById('result-body').innerText;
+        if (!text || text.includes("Awaiting")) return;
+        navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copy-refined-btn');
+        const originalText = btn.innerText;
+        btn.innerText = "COPIED!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+    };
+
+    async function generatePDF() {
+        const title = localStorage.getItem("lyricai_title") || "Untitled Song";
+        const btn = document.getElementById('export-report-btn');
+        const originalText = btn.innerText;
+        
+        btn.disabled = true;
+        btn.innerText = "WAIT...";
+
+        // Populate Template
+        document.getElementById('pdf-song-title').textContent = title;
+        document.getElementById('pdf-date').textContent = new Date().toLocaleDateString();
+        document.getElementById('pdf-original-lyrics').textContent = localStorage.getItem("lyricai_original") || "";
+        document.getElementById('pdf-translation').textContent = localStorage.getItem("lyricai_translation") || "";
+        document.getElementById('pdf-mood').textContent = localStorage.getItem("lyricai_mood") || "";
+        document.getElementById('pdf-structure').textContent = localStorage.getItem("lyricai_structure") || "";
+        document.getElementById('pdf-metaphors').textContent = localStorage.getItem("lyricai_metaphors") || "";
+        document.getElementById('pdf-refined').textContent = document.getElementById('result-body').innerText;
+
+        const opt = {
+            margin: 10,
+            filename: `${title.replace(/\s+/g, '_')}_Masterpiece.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        await html2pdf().from(document.getElementById('pdf-template').innerHTML).set(opt).save();
+
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
-    // --- Copy Refined Lyrics ---
-    const copyRefinedBtn = document.getElementById("copy-refined-btn");
-    copyRefinedBtn.addEventListener("click", () => {
-        const textToCopy = resultBody.innerText || resultBody.textContent;
-        if (!textToCopy || textToCopy.includes("Awaiting creative")) return;
-        
-        navigator.clipboard.writeText(textToCopy);
-        
-        const icon = copyRefinedBtn.querySelector(".material-symbols-outlined");
-        const originalIcon = icon.innerText;
-        icon.innerText = "check";
-        copyRefinedBtn.classList.add("bg-green-100");
-        setTimeout(() => {
-            icon.innerText = originalIcon;
-            copyRefinedBtn.classList.remove("bg-green-100");
-        }, 2000);
+
+    document.getElementById('export-report-btn').onclick = () => generatePDF();
+
+    async function autoSave(refined) {
+        const songId = localStorage.getItem('lyricai_current_song_id');
+        if (!songId) return;
+        const data = {
+            id: songId,
+            title: localStorage.getItem("lyricai_title"),
+            lyrics: localStorage.getItem("lyricai_original"),
+            refined_lyrics: refined
+        };
+        await apiFetch('/songs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    }
+
+    // Theme & UI
+    function applyTheme() {
+        const isDark = localStorage.getItem('lyricai_theme') === 'dark';
+        document.documentElement.classList.toggle('dark', isDark);
+    }
+
+    document.getElementById('toggle-library-btn').onclick = () => {
+        document.getElementById('library-sidebar').classList.remove('-translate-x-full');
+        document.getElementById('library-overlay').classList.remove('hidden');
+        fetchSongs();
+    };
+    document.getElementById('close-library-btn').onclick = () => {
+        document.getElementById('library-sidebar').classList.add('-translate-x-full');
+        document.getElementById('library-overlay').classList.add('hidden');
+    };
+    document.getElementById('avatar-click-zone').onclick = () => document.getElementById('profile-modal').classList.remove('hidden');
+    document.getElementById('profile-overlay').onclick = () => document.getElementById('profile-modal').classList.add('hidden');
+    document.getElementById('theme-toggle-btn').onclick = () => {
+        localStorage.setItem('lyricai_theme', localStorage.getItem('lyricai_theme') === 'dark' ? 'light' : 'dark');
+        applyTheme();
+    };
+
+    let allSongs = [];
+
+    async function fetchSongs() {
+        const response = await apiFetch('/songs');
+        if (response && response.ok) {
+            allSongs = await response.json();
+            renderSongList(allSongs);
+        }
+    }
+
+    function renderSongList(songs) {
+        const container = document.getElementById('song-list-container');
+        if (!songs.length) {
+            container.innerHTML = '<div class="text-center py-10 text-slate-400 italic">No songs found.</div>';
+            return;
+        }
+        container.innerHTML = songs.map(s => `
+            <div class="group flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer ${localStorage.getItem('lyricai_current_song_id') === s.id ? 'bg-primary/10 border-primary/20' : ''}" onclick="window.loadSong('${s.id}')">
+                <div class="flex flex-col gap-0.5">
+                    <span class="font-bold text-slate-700 dark:text-slate-200 text-sm truncate w-48">${s.title || 'Untitled'}</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-black">${new Date(s.updated_at).toLocaleDateString()}</span>
+                </div>
+                <button onclick="event.stopPropagation(); window.deleteSong('${s.id}')" class="opacity-0 group-hover:opacity-100 p-1.5 text-slate-300 hover:text-red-400 transition-all">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    window.deleteSong = async (id) => {
+        if (!confirm('Delete this song?')) return;
+        const response = await apiFetch(`/songs/${id}`, { method: 'DELETE' });
+        if (response && response.ok) {
+            if (localStorage.getItem('lyricai_current_song_id') === id) {
+                localStorage.removeItem('lyricai_current_song_id');
+                window.location.href = 'index.html';
+            } else {
+                fetchSongs();
+            }
+        }
+    };
+
+    // Auto-save on manual edit
+    document.getElementById('result-body').addEventListener('input', () => {
+        const text = document.getElementById('result-body').innerText;
+        localStorage.setItem('lyricai_refined', text);
+        // Debounce auto-save to DB
+        clearTimeout(window.saveTimeout);
+        window.saveTimeout = setTimeout(() => autoSave(text), 1000);
     });
 
-    // --- Export Full Report (.txt) ---
-    const exportBtn = document.getElementById("export-report-btn");
-    exportBtn.addEventListener("click", () => {
-        const refinedOutput = resultBody.innerText || resultBody.textContent;
-        const status = statusCheck.innerText || statusCheck.textContent;
-        
-        const reportContent = `LYRICAI STUDIO - FULL REPORT
-==================================================
-SONG TITLE: ${songTitle}
-TARGET LANGUAGE: ${targetLang}
-DATE: ${new Date().toLocaleString()}
+    const searchInput = document.getElementById('library-search-input');
+    if (searchInput) {
+        searchInput.oninput = (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allSongs.filter(s => s.title.toLowerCase().includes(query));
+            renderSongList(filtered);
+        };
+    }
 
---------------------------------------------------
-[1] ORIGINAL LYRICS
---------------------------------------------------
-${originalLyrics}
+    window.loadSong = async (id) => {
+        const response = await apiFetch(`/songs/${id}`);
+        if (response && response.ok) {
+            const song = await response.json();
+            currentSongId = song.id;
+            localStorage.setItem('lyricai_current_song_id', song.id);
+            localStorage.setItem("lyricai_title", song.title);
+            localStorage.setItem("lyricai_original", song.lyrics);
+            localStorage.setItem("lyricai_structure", song.structure || "");
+            localStorage.setItem("lyricai_mood", song.mood || "");
+            localStorage.setItem("lyricai_metaphors", song.metaphors || "");
+            localStorage.setItem("lyricai_translation", song.translation || "");
+            localStorage.setItem("lyricai_refined", song.refined_lyrics || "");
+            localStorage.setItem("lyricai_targetLang", song.target_language || "English");
+            
+            window.location.reload();
+        }
+    };
 
---------------------------------------------------
-[2] MOOD ANALYSIS
---------------------------------------------------
-${mood}
+    window.testConnection = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/ping`);
+            if (res.ok) alert("Connection OK!");
+            else alert("Server error: " + res.status);
+        } catch (err) { alert("Connection failed. Check proxy."); }
+    };
 
---------------------------------------------------
-[3] STRUCTURE ANALYSIS
---------------------------------------------------
-${analysis}
-
---------------------------------------------------
-[4] KEY METAPHORS
---------------------------------------------------
-${metaphors}
-
---------------------------------------------------
-[5] POETIC TRANSLATION (AGENT 1&2 OUTPUT)
---------------------------------------------------
-${translation}
-
---------------------------------------------------
-[6] REFINED & POLISHED VERSION (AGENT 3&4 OUTPUT)
---------------------------------------------------
-${refinedOutput}
-
-STATUS: ${status}
-
-==================================================
-Generated by LyricAI Studio
-`;
-
-        const blob = new Blob([reportContent], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${songTitle.replace(/\s+/g, '_')}_Analysis_Report.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
-});
+    // Init
+    checkSession().then(() => loadSongData());
+    applyTheme();
 </script>
+<!-- PDF Export Template (Hidden) -->
+<div id="pdf-template" class="hidden">
+    <div class="p-12 bg-white text-slate-900 font-sans" style="width: 800px;">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b-2 border-primary pb-8 mb-8">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 uppercase tracking-tighter" id="pdf-song-title">Song Title</h1>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">LyricAI Studio Professional Report</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-black text-slate-400 uppercase">Export Date</p>
+                <p class="text-xs font-bold text-slate-700" id="pdf-date"></p>
+            </div>
+        </div>
+
+        <!-- Masterpiece Section (Full Width) -->
+        <div class="mb-12 p-8 bg-primary/5 rounded-3xl border-2 border-primary/20">
+            <h2 class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-4 text-center">Masterpiece Version</h2>
+            <div id="pdf-refined" class="text-lg leading-relaxed text-slate-800 font-bold text-center whitespace-pre-wrap italic"></div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-2 gap-12 mb-8">
+            <!-- Lyrics Column -->
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-l-4 border-slate-200 pl-2">Original Lyrics</h2>
+                    <div id="pdf-original-lyrics" class="text-xs leading-relaxed whitespace-pre-wrap italic text-slate-500"></div>
+                </div>
+                <div>
+                    <h2 class="text-[10px] font-black text-accent uppercase tracking-widest mb-3 border-l-4 border-accent pl-2">Poetic Translation</h2>
+                    <div id="pdf-translation" class="text-xs leading-relaxed whitespace-pre-wrap text-slate-600 font-bold"></div>
+                </div>
+            </div>
+
+            <!-- Analysis Column -->
+            <div class="space-y-6">
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-2">Mood & Emotional Payload</h3>
+                    <div id="pdf-mood" class="text-[10px] leading-relaxed text-slate-600"></div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-2">Structure & Rhythm</h3>
+                    <div id="pdf-structure" class="text-[10px] leading-relaxed text-slate-600"></div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-2">Key Metaphors</h3>
+                    <div id="pdf-metaphors" class="text-[10px] leading-relaxed text-slate-600"></div>
+                </div>
+                <div class="p-4 bg-primary/5 rounded-2xl border-2 border-primary/20">
+                    <h3 class="text-[10px] font-black text-primary uppercase mb-2">Musical Harmony</h3>
+                    <div class="grid grid-cols-2 gap-2 text-[10px] mb-2">
+                        <p><strong>Key:</strong> <span id="pdf-key"></span></p>
+                        <p><strong>BPM:</strong> <span id="pdf-bpm"></span></p>
+                    </div>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase mt-2">Verse Chords</p>
+                    <p id="pdf-chords-verse" class="text-[10px] font-mono font-bold text-slate-700"></p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase mt-2">Chorus Chords</p>
+                    <p id="pdf-chords-chorus" class="text-[10px] font-mono font-bold text-slate-700"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 pt-8 border-t border-slate-100 text-center">
+            <p class="text-[9px] font-bold text-slate-300 uppercase tracking-[0.2em]">Generated by LyricAI Studio • Professional Songwriting AI</p>
+        </div>
+    </div>
+</div>
+<div class="fixed bottom-2 right-2 opacity-10 hover:opacity-100 transition-opacity"><button onclick="testConnection()" class="text-[8px] bg-slate-200 p-1 rounded font-black uppercase">Net Test</button></div>
 </body></html>
+

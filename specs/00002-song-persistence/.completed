@@ -1,0 +1,6 @@
+Completed: 2026-05-03T01:50:00Z
+Song persistence feature implemented.
+- Database: Song table added with User relationship.
+- Backend: CRUD endpoints (/songs) with JWT protection and owner-only access.
+- Frontend: Collapsible "My Songs" sidebar, auto-save after analysis, manual save/new song buttons.
+- UX: Slide-in animations, loading states, and guest user prompts.
