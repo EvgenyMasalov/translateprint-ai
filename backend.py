@@ -45,8 +45,10 @@ async def lifespan(app: FastAPI):
             "https://": httpx.AsyncHTTPTransport(proxy=proxy_url),
         }
     
-    # Client for LLM and manual API calls
-    app.state.client = httpx.AsyncClient(timeout=120.0, mounts=mounts, trust_env=False)
+    # Optimized client for LLM and manual API calls
+    limits = httpx.Limits(max_keepalive_connections=20, max_connections=100)
+    timeout = httpx.Timeout(120.0, connect=10.0)
+    app.state.client = httpx.AsyncClient(timeout=timeout, mounts=mounts, limits=limits, trust_env=False)
     
     # Register Google OAuth with proxy-enabled client
     oauth.register(
@@ -86,7 +88,7 @@ app.add_middleware(
 )
 app.add_middleware(
     SessionMiddleware, 
-    secret_key=os.getenv("JWT_SECRET", "sessionsecret"),
+    secret_key=os.environ["JWT_SECRET"],
     session_cookie="lyricai_session",
     same_site="lax"
 )
@@ -123,12 +125,15 @@ class SongBase(BaseModel):
 class SongCreate(SongBase):
     id: Optional[str] = None
 
+from pydantic import BaseModel, EmailStr, ConfigDict
+
+# ... rest of imports ...
+
 class SongResponse(SongBase):
     id: str
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class AnalyzeRequest(BaseModel):
     chatInput: str
@@ -282,8 +287,9 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
         token = await oauth.google.authorize_access_token(request)
         print("Token received successfully")
     except Exception as e:
-        print(f"Google auth error: {e}")
-        raise HTTPException(status_code=400, detail=f"Google auth error: {e}")
+        print(f"CRITICAL Google auth error: {e}")
+        # Sanitize error message for the client
+        raise HTTPException(status_code=400, detail="Authentication failed with Google. Please try again.")
     
     user_info = token.get('userinfo')
     if not user_info:
@@ -311,7 +317,8 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
     # Create JWT
     jwt_token = create_access_token(data={"sub": user.email, "user_id": user.id})
     
-    # Safe cross-origin redirect passing token in URL, replacing history
+    # Secure delivery via fragment (#) instead of query parameter (?)
+    # Fragments are not sent to the server or stored in logs.
     from fastapi.responses import HTMLResponse
     html_content = f"""
     <!DOCTYPE html>
@@ -321,7 +328,7 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
     </head>
     <body>
         <script>
-            window.location.replace('http://127.0.0.1:8080/index.html?token={jwt_token}');
+            window.location.replace('http://127.0.0.1:8080/index.html#token={jwt_token}');
         </script>
     </body>
     </html>
@@ -329,7 +336,7 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
     return HTMLResponse(content=html_content)
 
 @app.get("/me")
-async def get_me(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def get_me(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     song_count = db.query(Song).filter(Song.user_id == user.id).count()
     return {
         "id": user.id,
@@ -343,7 +350,7 @@ async def get_me(db: Session = Depends(get_db), user: User = Depends(get_current
     }
 
 @app.put("/me")
-async def update_me(req: UserUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def update_me(req: UserUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     if req.first_name: user.first_name = req.first_name
     if req.last_name: user.last_name = req.last_name
     db.commit()
@@ -411,6 +418,36 @@ async def literary_editor(req: EditorRequest):
     prompt = f"SYSTEM: You are a Senior Literary Editor and Master Poet. Perform a FINAL SURGICAL POLISH on the draft.\nOutput ONLY the corrected song lyrics. No commentary.\n\nUSER: Polish this {req.targetLanguage} song draft:\n{req.poetDraft}"
     editor_output = await call_llm(app.state.client, model, prompt, 0.3)
     return {"editor_output": editor_output}
+
+class HarmonyRequest(BaseModel):
+    lyrics: str
+
+@app.post("/webhook/analyze-harmony")
+async def analyze_harmony(req: HarmonyRequest):
+    model = "anthracite-org/magnum-v4-72b"
+    prompt = f"""SYSTEM: You are a professional Music Theorist. Analyze the following lyrics and suggest the perfect musical harmony. You MUST output your analysis in this exact format:
+
+[HARMONY]
+KEY: (e.g., G Major)
+BPM: (e.g., 120)
+CHORDS VERSE: (e.g., Am - F - C - G)
+CHORDS CHORUS: (e.g., C - G - Am - F)
+
+USER: Analyze harmony for these lyrics:
+{req.lyrics}"""
+    
+    output = await call_llm(app.state.client, model, prompt, 0.1)
+    
+    def get_val(key, text):
+        m = re.search(rf"{key}:\s*(.*)", text, re.I)
+        return m.group(1).strip() if m else ""
+
+    return {
+        "key": get_val("KEY", output),
+        "bpm": get_val("BPM", output),
+        "chords_verse": get_val("CHORDS VERSE", output),
+        "chords_chorus": get_val("CHORDS CHORUS", output)
+    }
 
 if __name__ == "__main__":
     uvicorn.run("backend:app", host="0.0.0.0", port=5678, reload=False)

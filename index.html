@@ -184,7 +184,7 @@
 <div class="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
 
 <!-- CARDS -->
-<div class="clay-card dark:bg-slate-900/50 p-8 rounded-2xl">
+<div class="clay-card dark:bg-slate-900/50 p-8 rounded-2xl hidden">
 <div class="flex items-start gap-3 mb-6">
 <div class="size-12 rounded-xl bg-primary/20 flex items-center justify-center text-slate-700 shrink-0">
 <span class="material-symbols-outlined text-2xl">psychology</span>
@@ -223,32 +223,6 @@
 <p id="metaphors-output" class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">Awaiting AI creative...</p>
 </div>
 
-<!-- MUSICAL HARMONY CARD -->
-<div class="clay-card dark:bg-slate-900/50 p-6 rounded-2xl border-l-4 border-accent">
-<div class="flex items-start gap-3 mb-4">
-<div class="size-8 rounded-xl bg-accent/20 flex items-center justify-center text-slate-700 shrink-0">
-<span class="material-symbols-outlined text-lg">music_note</span>
-</div>
-<div class="flex-1 flex justify-between items-start">
-<div>
-<p class="text-xs font-bold text-slate-400 uppercase">Musical Harmony</p>
-<h4 class="font-bold text-slate-800 dark:text-slate-100" id="harmony-key">Awaiting harmony...</h4>
-</div>
-<div class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg text-[10px] font-black text-slate-500" id="harmony-bpm">0 BPM</div>
-</div>
-</div>
-<div class="space-y-4">
-<div>
-<p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Verse Chords</p>
-<p id="chords-verse" class="text-xs font-mono font-bold text-primary-dim dark:text-primary tracking-widest bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">---</p>
-</div>
-<div>
-<p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Chorus Chords</p>
-<p id="chords-chorus" class="text-xs font-mono font-bold text-accent tracking-widest bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">---</p>
-</div>
-</div>
-</div>
-
 <!-- TRANSLATION CARD -->
 <div class="clay-card dark:bg-slate-900/50 p-8 rounded-2xl border-l-4 border-primary">
 <div class="flex items-center justify-between mb-8">
@@ -263,11 +237,22 @@
 <option value="English">English</option>
 <option value="English Slang">English Slang</option>
 <option value="American English">American English</option>
-<option value="Russian">Russian</option>
-<option value="German">German</option>
-<option value="French">French</option>
-<option value="Spanish">Spanish</option>
-<option value="Italian">Italian</option>
+<option value="Russian">Russian (Русский)</option>
+<option value="German">German (Deutsch)</option>
+<option value="French">French (Français)</option>
+<option value="Spanish">Spanish (Español)</option>
+<option value="Italian">Italian (Italiano)</option>
+<option value="Portuguese">Portuguese (Português)</option>
+<option value="Chinese">Chinese (中文)</option>
+<option value="Japanese">Japanese (日本語)</option>
+<option value="Korean">Korean (한국어)</option>
+<option value="Arabic">Arabic (العربية)</option>
+<option value="Turkish">Turkish (Türkçe)</option>
+<option value="Dutch">Dutch (Nederlands)</option>
+<option value="Swedish">Swedish (Svenska)</option>
+<option value="Norwegian">Norwegian (Norsk)</option>
+<option value="Polish">Polish (Polski)</option>
+<option value="Ukrainian">Ukrainian (Українська)</option>
 </select>
 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
 </div>
@@ -280,10 +265,10 @@
 <span class="material-symbols-outlined text-sm">content_copy</span> COPY LYRICS
 </button>
 </div>
+</div>
 </aside>
 </main>
 
-<!-- Sidebar -->
 <div id="library-sidebar" class="fixed inset-y-0 left-0 w-80 bg-white dark:bg-slate-900 shadow-2xl z-[60] transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-r border-slate-100 dark:border-slate-800">
     <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
         <h2 class="text-xl font-black text-slate-800 dark:text-white flex items-center gap-2">
@@ -308,7 +293,6 @@
 </div>
 <div id="library-overlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[55] hidden transition-opacity duration-300"></div>
 
-<!-- Profile Modal -->
 <div id="profile-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
     <div id="profile-overlay" class="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></div>
     <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl p-8 clay-card transform scale-95 opacity-0 transition-all duration-300 ease-out" id="profile-card">
@@ -359,7 +343,6 @@
     const API_BASE = "http://127.0.0.1:5678";
     const N8N_WEBHOOK_URL = `${API_BASE}/webhook/analyze-lyrics`;
 
-    // Handle token from URL (Google Auth Callback)
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromUrl = urlParams.get('token');
     if (tokenFromUrl) {
@@ -385,11 +368,7 @@
         libraryOverlay: document.getElementById('library-overlay'),
         songList: document.getElementById('song-list-container'),
         profileModal: document.getElementById('profile-modal'),
-        profileCard: document.getElementById('profile-card'),
-        harmonyKey: document.getElementById('harmony-key'),
-        harmonyBpm: document.getElementById('harmony-bpm'),
-        chordsVerse: document.getElementById('chords-verse'),
-        chordsChorus: document.getElementById('chords-chorus')
+        profileCard: document.getElementById('profile-card')
     };
 
     let currentSongId = null;
@@ -400,18 +379,10 @@
         const headers = { ...options.headers };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         try {
-            console.log(`Fetching: ${API_BASE}${path}`);
             const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
-            if (response.status === 401) { 
-                localStorage.removeItem('lyricai_token'); 
-                // Return response so callers can handle unauthorized state (guest mode)
-                return response; 
-            }
+            if (response.status === 401) { localStorage.removeItem('lyricai_token'); return response; }
             return response;
-        } catch (err) { 
-            console.error('API Fetch Error:', err); 
-            return null; 
-        }
+        } catch (err) { console.error('API Fetch Error:', err); return null; }
     }
 
     function unlockAgent() {
@@ -463,16 +434,14 @@
             elements.poet.innerHTML = (song.translation || '').replace(/\n/g, '<br>');
             elements.targetLang.value = song.target_language || 'English';
             
-            // Restore Musical Harmony
-            elements.harmonyKey.textContent = song.musical_key || "Not specified";
-            elements.harmonyBpm.textContent = `${song.bpm || 0} BPM`;
-            elements.chordsVerse.textContent = song.chords_verse || "---";
-            elements.chordsChorus.textContent = song.chords_chorus || "---";
-
             localStorage.setItem("lyricai_targetLang", elements.targetLang.value);
             localStorage.setItem("lyricai_refined", song.refined_lyrics || "");
-            
-            // Restore harmony to local
+            localStorage.setItem("lyricai_original", song.lyrics || "");
+            localStorage.setItem("lyricai_translation", song.translation || "");
+            localStorage.setItem("lyricai_structure", song.structure || "");
+            localStorage.setItem("lyricai_mood", song.mood || "");
+            localStorage.setItem("lyricai_metaphors", song.metaphors || "");
+
             localStorage.setItem("lyricai_key", song.musical_key || "");
             localStorage.setItem("lyricai_bpm", song.bpm || "");
             localStorage.setItem("lyricai_chords_verse", song.chords_verse || "");
@@ -500,10 +469,10 @@
             translation: elements.poet.innerText,
             refined_lyrics: localStorage.getItem('lyricai_refined') || "",
             target_language: elements.targetLang.value,
-            musical_key: elements.harmonyKey.textContent,
-            bpm: elements.harmonyBpm.textContent.replace(' BPM', ''),
-            chords_verse: elements.chordsVerse.textContent,
-            chords_chorus: elements.chordsChorus.textContent
+            musical_key: localStorage.getItem("lyricai_key"),
+            bpm: localStorage.getItem("lyricai_bpm"),
+            chords_verse: localStorage.getItem("lyricai_chords_verse"),
+            chords_chorus: localStorage.getItem("lyricai_chords_chorus")
         };
         const response = await apiFetch('/songs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
         if (response && response.ok) {
@@ -517,7 +486,7 @@
         } else if (!auto) {
             elements.saveBtn.disabled = false;
             elements.saveBtn.innerHTML = originalHtml;
-            alert("Save failed. Check console.");
+            alert("Save failed.");
         }
     }
 
@@ -541,13 +510,6 @@
     function applyTheme() {
         const isDark = localStorage.getItem('lyricai_theme') === 'dark';
         document.documentElement.classList.toggle('dark', isDark);
-        const btn = document.getElementById('theme-toggle-btn');
-        if (btn) { 
-            btn.classList.toggle('bg-primary', isDark); 
-            btn.classList.toggle('bg-slate-200', !isDark);
-            document.getElementById('theme-toggle-dot').classList.toggle('translate-x-6', isDark); 
-            document.getElementById('theme-toggle-dot').classList.toggle('translate-x-1', !isDark); 
-        }
     }
 
     document.getElementById('toggle-library-btn').onclick = () => toggleLibrary(true);
@@ -591,7 +553,6 @@
         elements.analyzeBtn.disabled = true;
         elements.status.innerHTML = `<span class="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span> <span class="text-[10px] font-bold text-blue-500 uppercase">Processing</span>`;
         
-        console.log("Starting analysis fetch to:", N8N_WEBHOOK_URL);
         try {
             const response = await fetch(N8N_WEBHOOK_URL, { 
                 method: "POST", 
@@ -599,10 +560,7 @@
                 body: JSON.stringify({ chatInput: text, targetLanguage: elements.targetLang.value }) 
             });
             
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Server returned ${response.status}: ${errText}`);
-            }
+            if (!response.ok) { throw new Error(`Server returned ${response.status}`); }
             
             const data = await response.json();
             elements.analysis.innerHTML = (data.structure_output || "").replace(/\n/g, "<br>");
@@ -610,18 +568,16 @@
             elements.metaphors.innerHTML = (data.metaphors_output || "").replace(/\n/g, "<br>");
             elements.poet.innerHTML = (data.poet_output || "").replace(/\n/g, "<br>");
             
-            // Musical Harmony Data
             const music = data.musical_data || {};
-            elements.harmonyKey.textContent = music.key || "Not specified";
-            elements.harmonyBpm.textContent = `${music.bpm || 0} BPM`;
-            elements.chordsVerse.textContent = music.chords_verse || "---";
-            elements.chordsChorus.textContent = music.chords_chorus || "---";
-
             localStorage.setItem("lyricai_original", text);
             localStorage.setItem("lyricai_translation", data.poet_output || "");
             localStorage.setItem("lyricai_targetLang", elements.targetLang.value);
-            
-            // Persist harmony to local for immediate use
+
+            // Persist all analysis context for the Agent
+            localStorage.setItem("lyricai_structure", data.structure_output || "");
+            localStorage.setItem("lyricai_mood", data.mood_output || "");
+            localStorage.setItem("lyricai_metaphors", data.metaphors_output || "");
+
             localStorage.setItem("lyricai_key", music.key || "");
             localStorage.setItem("lyricai_bpm", music.bpm || "");
             localStorage.setItem("lyricai_chords_verse", music.chords_verse || "");
@@ -629,13 +585,8 @@
 
             unlockAgent();
             saveSong(true);
-        } catch (err) { 
-            console.error("Fetch failure:", err);
-            alert("Analysis failed: " + err.message + "\n\nTip: If you use a proxy, make sure 127.0.0.1 is in exceptions."); 
-        } finally { 
-            elements.analyzeBtn.disabled = false; 
-            elements.status.innerHTML = `<span class="flex h-2 w-2 rounded-full bg-green-500"></span> <span class="text-[10px] font-bold text-green-500 uppercase">Complete</span>`; 
-        }
+        } catch (err) { alert("Analysis failed: " + err.message); } 
+        finally { elements.analyzeBtn.disabled = false; elements.status.innerHTML = `<span class="flex h-2 w-2 rounded-full bg-green-500"></span> <span class="text-[10px] font-bold text-green-500 uppercase">Complete</span>`; }
     };
 
     document.getElementById('new-song-sidebar-btn').onclick = () => { resetEditor(); toggleLibrary(false); };
@@ -651,10 +602,6 @@
         localStorage.setItem("lyricai_metaphors", elements.metaphors.innerText);
         localStorage.setItem("lyricai_translation", text);
         localStorage.setItem("lyricai_targetLang", elements.targetLang.value);
-        localStorage.setItem("lyricai_key", elements.harmonyKey.textContent);
-        localStorage.setItem("lyricai_bpm", elements.harmonyBpm.textContent);
-        localStorage.setItem("lyricai_chords_verse", elements.chordsVerse.textContent);
-        localStorage.setItem("lyricai_chords_chorus", elements.chordsChorus.textContent);
         unlockAgent();
         const originalHtml = elements.copyLyricsBtn.innerHTML;
         elements.copyLyricsBtn.innerHTML = `<span class="material-symbols-outlined text-green-500 text-sm">check</span> COPIED!`;
@@ -675,16 +622,11 @@
         document.getElementById('pdf-structure').textContent = elements.analysis.innerText;
         document.getElementById('pdf-metaphors').textContent = elements.metaphors.innerText;
         
-        // Populate Harmony
-        document.getElementById('pdf-key').textContent = elements.harmonyKey.textContent;
-        document.getElementById('pdf-bpm').textContent = elements.harmonyBpm.textContent;
-        document.getElementById('pdf-chords-verse').textContent = elements.chordsVerse.textContent;
-        document.getElementById('pdf-chords-chorus').textContent = elements.chordsChorus.textContent;
+        document.getElementById('pdf-key').textContent = localStorage.getItem("lyricai_key") || "---";
+        document.getElementById('pdf-bpm').textContent = (localStorage.getItem("lyricai_bpm") || "0") + " BPM";
+        document.getElementById('pdf-chords-verse').textContent = localStorage.getItem("lyricai_chords_verse") || "---";
+        document.getElementById('pdf-chords-chorus').textContent = localStorage.getItem("lyricai_chords_chorus") || "---";
         
-        // Add Refined version if exists
-        const refinedText = localStorage.getItem('lyricai_refined') || "";
-        const refinedSection = refinedText ? `\n\n--------------------------------------------------\n[6] REFINED VERSION (AGENT PRO)\n--------------------------------------------------\n${refinedText}` : "";
-
         const opt = {
             margin: 10,
             filename: `${songTitle.replace(/\s+/g, '_')}_Report.pdf`,
@@ -693,9 +635,8 @@
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        try {
-            await html2pdf().from(document.getElementById('pdf-template').innerHTML).set(opt).save();
-        } catch (err) { console.error('PDF Error:', err); alert('PDF export failed.'); }
+        try { await html2pdf().from(document.getElementById('pdf-template').innerHTML).set(opt).save(); } 
+        catch (err) { alert('PDF export failed.'); }
         
         elements.reportBtn.innerHTML = originalHtml;
         elements.reportBtn.disabled = false;
@@ -705,7 +646,7 @@
 
     document.getElementById('library-search-input').oninput = (e) => {
         const query = e.target.value.toLowerCase();
-        renderSongList(allSongs.filter(s => s.title.toLowerCase().includes(query) || (s.lyrics && s.lyrics.toLowerCase().includes(query))));
+        renderSongList(allSongs.filter(s => s.title.toLowerCase().includes(query)));
     };
 
     window.testConnection = async () => {
@@ -713,14 +654,15 @@
             const res = await fetch(`${API_BASE}/ping`);
             if (res.ok) alert("Connection OK!");
             else alert("Server error: " + res.status);
-        } catch (err) { alert("Connection failed. Check proxy."); }
+        } catch (err) { alert("Connection failed."); }
     };
 
     checkSession();
     applyTheme();
 </script>
+
 <div class="fixed bottom-2 right-2 opacity-10 hover:opacity-100 transition-opacity"><button onclick="testConnection()" class="text-[8px] bg-slate-200 p-1 rounded font-black uppercase">Net Test</button></div>
-<!-- PDF Export Template (Hidden) -->
+
 <div id="pdf-template" class="hidden">
     <div class="p-12 bg-white text-slate-900 font-sans" style="width: 800px;">
         <div class="flex justify-between items-center border-b-2 border-primary pb-8 mb-8">
@@ -775,4 +717,5 @@
         </div>
     </div>
 </div>
-</body></html>
+</body>
+</html>

@@ -29,7 +29,7 @@ class Song(Base):
     __tablename__ = "songs"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     title = Column(String, nullable=False)
     lyrics = Column(Text, nullable=False)
     structure = Column(Text, nullable=True)

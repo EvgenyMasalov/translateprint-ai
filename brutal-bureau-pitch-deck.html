@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch Deck - Brutal Bureau</title>
+    <style>
+        :root {
+            --bg:      oklch(96% 0.004 100);
+            --surface: oklch(100% 0 0);
+            --fg:      oklch(15% 0.02 100);
+            --muted:   oklch(40% 0.02 100);
+            --border:  oklch(15% 0.02 100);
+            --accent:  oklch(60% 0.22 25);
+
+            --font-display: 'Times New Roman', 'Iowan Old Style', Georgia, serif;
+            --font-body:    ui-monospace, 'IBM Plex Mono', 'JetBrains Mono', Menlo, monospace;
+
+            --canvas-width: 1920;
+            --canvas-height: 1080;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-body);
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #deck-container {
+            width: calc(var(--canvas-width) * 1px);
+            height: calc(var(--canvas-height) * 1px);
+            position: relative;
+            transform-origin: center center;
+            background: var(--bg);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px;
+            box-sizing: border-box;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 1;
+        }
+        
+        #deck-ui {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        #deck-ui button {
+            font-family: var(--font-body);
+            background: transparent;
+            color: var(--fg);
+            border: 2px solid var(--border);
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        #slide-counter {
+            position: fixed;
+            bottom: 42px;
+            left: 40px;
+            font-family: var(--font-body);
+            font-size: 16px;
+            color: var(--muted);
+            z-index: 100;
+        }
+
+        /* Brutalist Styles */
+        .slide h1, .slide h2, .slide h3 {
+            font-family: var(--font-display);
+            font-weight: 400;
+            margin: 0;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 0.9;
+        }
+        .slide p {
+            font-family: var(--font-body);
+            font-size: 28px;
+            max-width: 50ch;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .slide.cover h1 {
+            font-size: clamp(100px, 15vw, 220px);
+        }
+        .slide.cover p {
+            font-size: 32px;
+            color: var(--muted);
+        }
+        
+        .slide.manifesto h1 {
+            font-size: clamp(80px, 12vw, 160px);
+            max-width: 20ch;
+        }
+
+        .slide.full-bleed {
+            padding: 0;
+            justify-content: flex-end;
+            align-items: flex-start;
+        }
+        .slide.full-bleed .content {
+            padding: 80px;
+            background: oklch(96% 0.004 100 / 0.8);
+            backdrop-filter: blur(5px);
+            border-top: 2px solid var(--border);
+            border-left: 2px solid var(--border);
+            width: 50%;
+            margin-inline-start: auto;
+            margin-bottom: 0;
+        }
+        .slide.full-bleed h1 {
+            text-align: left;
+             font-size: clamp(60px, 10vw, 120px);
+        }
+        .slide.full-bleed .image-placeholder {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(45deg, var(--muted), var(--muted) 10px, var(--surface) 10px, var(--surface) 20px);
+            z-index: -1;
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            width: 100%;
+            max-width: 1600px;
+            align-items: start;
+        }
+        .two-col h2 {
+            font-size: clamp(50px, 8vw, 100px);
+            text-align: left;
+        }
+        .two-col p {
+            text-align: left;
+        }
+        .two-col .col-label {
+            font-family: var(--font-body);
+            font-size: 200px;
+            color: var(--accent);
+            line-height: 0.7;
+        }
+
+        .grid-3 {
+             display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            width: 100%;
+            background-color: var(--border);
+            border: 2px solid var(--border);
+        }
+        .grid-3 .card {
+            background-color: var(--bg);
+            padding: 40px;
+        }
+        .grid-3 .card h3 {
+             font-size: 48px;
+             text-align: left;
+             margin-bottom: 20px;
+        }
+        .grid-3 .card p {
+            font-size: 24px;
+            text-align: left;
+        }
+        
+        .stat-list {
+            display: flex;
+            gap: 80px;
+            text-align: center;
+        }
+        .stat-list .stat h2 {
+            font-family: var(--font-body);
+            font-size: 200px;
+            color: var(--accent);
+        }
+        .stat-list .stat p {
+            font-family: var(--font-display);
+            font-size: 32px;
+            text-transform: uppercase;
+        }
+
+        .text-list { text-align: center; }
+        .text-list p {
+            font-size: 54px;
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .final-word h1 {
+            font-size: clamp(150px, 25vw, 400px);
+            color: var(--accent);
+        }
+
+    </style>
+</head>
+<body>
+    <main id="deck-container">
+        <section class="slide cover active" data-screen-label="01 Cover">
+            <h1>Brutal Bureau</h1>
+            <p>Uncompromising Digital Structures</p>
+        </section>
+        <section class="slide manifesto" data-screen-label="02 Vision">
+            <h1>We build with the permanence of concrete.</h1>
+        </section>
+        <section class="slide full-bleed" data-screen-label="03 Market">
+            <div class="image-placeholder"></div>
+            <div class="content">
+                <h1>The Sea of Sameness</h1>
+                <p>The web is awash in soft, forgettable interfaces. Brands blend. Impact is lost.</p>
+            </div>
+        </section>
+        <section class="slide" data-screen-label="04 Approach">
+            <div class="two-col">
+                <div>
+                    <div class="col-label">1</div>
+                    <h2>Strategy</h2>
+                    <p>We excavate the core function of your product. We find the essential truth and discard the rest. No features for features' sake. No decorative distractions.</p>
+                </div>
+                <div>
+                    <div class="col-label">2</div>
+                    <h2>Design</h2>
+                    <p>We build the most direct, honest structure to house that function. Clear, legible, and built to last. Our work is not about trends; it is about purpose.</p>
+                </div>
+            </div>
+        </section>
+        <section class="slide" data-screen-label="05 Work">
+            <div class="grid-3">
+                <div class="card">
+                    <h3>Acme Corp</h3>
+                    <p>A complete redesign of their internal logistics dashboard. Reduced operator error by 40%.</p>
+                </div>
+                <div class="card">
+                    <h3>Monolith Inc.</h3>
+                    <p>A public-facing API documentation portal. Developer adoption increased by 300% in 6 months.</p>
+                </div>
+                <div class="card">
+                    <h3>Foundation Co.</h3>
+                    <p>An e-commerce platform for architectural materials. Conversion lifted by 22%.</p>
+                </div>
+            </div>
+        </section>
+        <section class="slide" data-screen-label="06 Traction">
+            <div class="stat-list">
+                <div class="stat">
+                    <h2>5M+</h2>
+                    <p>Users Engaged</p>
+                </div>
+                <div class="stat">
+                    <h2>150%</h2>
+                    <p>Avg. Client ROI</p>
+                </div>
+                <div class="stat">
+                    <h2>3</h2>
+                    <p>Design Awards</p>
+                </div>
+            </div>
+        </section>
+        <section class="slide text-list" data-screen-label="07 Team">
+            <p>Jane Doe, Founder & Lead Architect</p>
+            <p>John Smith, Principal Engineer</p>
+        </section>
+        <section class="slide" data-screen-label="08 Ask">
+             <p style="font-size: 54px; max-width: 30ch;">We are raising a $2M seed round to expand our engineering team and build out our proprietary design system, 'Grid & State'.</p>
+        </section>
+        <section class="slide" data-screen-label="09 Contact">
+            <p style="font-size: 80px; margin-bottom: 20px;">Brutal Bureau</p>
+            <p style="font-size: 80px; color: var(--accent);">contact@brutal.bureau</p>
+        </section>
+        <section class="slide final-word" data-screen-label="10 Fin">
+            <h1>Fin.</h1>
+        </section>
+    </main>
+    
+    <div id="deck-ui">
+        <button id="prev-btn">Prev</button>
+        <button id="next-btn">Next</button>
+    </div>
+    <div id="slide-counter"></div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('slide-counter');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            currentSlide = index;
+            counter.textContent = `${(currentSlide + 1).toString().padStart(2, '0')} / ${slides.length}`;
+            localStorage.setItem('deck-slide-index', currentSlide);
+            window.location.hash = index + 1;
+        }
+
+        function scaleDeck() {
+            const container = document.getElementById('deck-container');
+            const cw = 1920;
+            const ch = 1080;
+            const ww = window.innerWidth;
+            const wh = window.innerHeight;
+
+            const scale = Math.min(ww / cw, wh / ch);
+            container.style.transform = `scale(${scale})`;
+        }
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            showSlide((currentSlide + 1) % slides.length);
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            showSlide((currentSlide - 1 + slides.length) % slides.length);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                showSlide((currentSlide + 1) % slides.length);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                showSlide((currentSlide - 1 + slides.length) % slides.length);
+            }
+        });
+
+        window.addEventListener('resize', scaleDeck);
+        
+        let initialSlide = 0;
+        const savedSlide = localStorage.getItem('deck-slide-index');
+        const hashSlide = parseInt(window.location.hash.substring(1), 10) - 1;
+
+        if (!isNaN(hashSlide) && hashSlide >= 0 && hashSlide < slides.length) {
+            initialSlide = hashSlide;
+        } else if (savedSlide) {
+            initialSlide = parseInt(savedSlide, 10);
+        }
+
+        showSlide(initialSlide);
+        scaleDeck();
+    </script>
+</body>
+</html>
