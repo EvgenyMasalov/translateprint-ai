@@ -1,31 +1,73 @@
-# TranslatePrint AI — LyricAI Studio
+# LyricAI Studio (TranslatePrint AI)
 
-A multi-agent AI songwriting and translation platform powered by n8n, Polza AI, and Claude Sonnet 4.
+Professional AI-powered songwriting and translation platform.
 
 ## Architecture
 
-The system uses a **3-webhook microservice architecture** orchestrated by n8n:
+LyricAI Studio uses a modular Python backend and a decoupled frontend architecture.
 
-| Webhook | Agent | Model | Purpose |
-|---------|-------|-------|---------|
-| `/analyze-lyrics` | Linguistic Analyzer + Cultural Bridge | Magnum 72b | Structure, metaphors, mood, literal translation |
-| `/poet-agent` | Creative Poet | Rocinante 12b | Poetic adaptation preserving rhythm |
-| `/literary-editor` | Literary Editor | Claude Sonnet 4 | Surgical final polish |
+### Backend (app/)
+- **FastAPI:** Modern, high-performance web framework.
+- **SQLAlchemy & Alembic:** Robust database ORM and migration system.
+- **JWT Security:** Standard-based user authentication.
+- **Service Layer:** Clean integration with external LLM providers.
 
-## Pages
+### Frontend (Vanilla JS + ES Modules)
+- **Modular JS:** Reusable logic for API calls, Auth, and UI utilities in `assets/js/`.
+- **Tailwind CSS:** Modern styling with dark mode support.
+- **localStorage Sync:** Efficient state management across pages.
 
-- **Editor** (`index.html`) — Main dashboard with lyrics input, language selection, and 4 analysis cards (Mood, Structure, Metaphors, Translation)
-- **Agent Pro** (`agent.html`) — Premium literary editing page with Analyze Manuscript (Rocinante) and Deep Analyze (Claude Sonnet 4)
+## Project Structure
 
-## Quick Start
+```
+├── app/                # Backend source
+│   ├── api/            # API Routers (auth, songs, webhooks)
+│   ├── core/           # Config, Security, DB session
+│   ├── models/         # SQLAlchemy & Pydantic models
+│   └── services/       # Business logic (LLM integrations)
+├── assets/js/          # Frontend modules (api, auth, editor)
+├── alembic/            # Database Migrations
+├── tests/              # Python Unit Tests
+├── tests-e2e/          # Playwright E2E Tests
+├── index.html          # Main Editor UI
+├── agent.html          # AI Agent UI
+└── registration.html   # Auth UI
+```
 
-1. Make sure Docker Desktop is running with n8n container
-2. Import `n8n_workflow_user_fixed.json` into n8n and configure API keys
-3. Double-click `start.bat`
+## Setup & Running
 
-## Tech Stack
+1. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- **Frontend:** HTML + Tailwind CSS + Vanilla JS
-- **Backend:** n8n (Docker) with LangChain AI Agents
-- **Models:** Magnum v4 72b, Rocinante 12b, Claude Sonnet 4 (via Polza AI)
-- **State:** Browser localStorage for cross-page data sync
+2. **Configure Environment:**
+   Create `.env` from `.env.example` and set your `JWT_SECRET`.
+
+3. **Run Migrations:**
+   ```bash
+   alembic upgrade head
+   ```
+
+4. **Start Backend:**
+   ```bash
+   python -m app.main
+   ```
+
+5. **Start Frontend:**
+   You can use any static server, e.g.:
+   ```bash
+   npx http-server . -p 8080
+   ```
+
+## Testing
+
+- **Unit Tests:**
+  ```bash
+  $env:PYTHONPATH="."; python -m unittest discover tests
+  ```
+- **E2E Tests:**
+  ```bash
+  cd tests-e2e
+  npm test
+  ```

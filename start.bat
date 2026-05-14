@@ -54,15 +54,15 @@ if errorlevel 1 (
     exit /b 1
 )
 
-start "LyricAI_Backend" /min cmd /c "chcp 65001 >nul && python -m uvicorn backend:app --host 127.0.0.1 --port 5678"
+start "LyricAI_Backend" /min cmd /c "chcp 65001 >nul && set PYTHONPATH=.&& python -m uvicorn app.main:app --host 127.0.0.1 --port 5678"
 
 echo Waiting for Backend (3 sec)...
 timeout /t 3 /nobreak >nul
 
 :: --- [3/3] Starting Frontend -------------------------------------------------
 echo.
-echo [3/3] Starting Frontend (Python HTTP Server)...
-start "LyricAI_Frontend" /min cmd /c "chcp 65001 >nul && python -m http.server 8080 --bind 127.0.0.1"
+echo [3/3] Starting Frontend (Robust MIME Server)...
+start "LyricAI_Frontend" /min cmd /c "chcp 65001 >nul && python serve_fixed_v5.py"
 
 echo Waiting for Frontend (2 sec)...
 timeout /t 2 /nobreak >nul
