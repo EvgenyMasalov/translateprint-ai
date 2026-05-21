@@ -114,40 +114,9 @@
         </div>
     </div>
 
-    <script>
-        const API_BASE = "http://127.0.0.1:5678";
-
-        function saveToken(token) {
-            localStorage.setItem('lyricai_token', token);
-        }
-
-        async function apiFetch(endpoint, options = {}) {
-            const token = localStorage.getItem('lyricai_token');
-            const headers = {
-                'Content-Type': 'application/json',
-                ...(options.headers || {})
-            };
-            
-            if (token && token !== 'null' && token !== 'undefined') {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE}${endpoint}`, {
-                    ...options,
-                    headers
-                });
-
-                if (response.status === 401) {
-                    localStorage.removeItem('lyricai_token');
-                }
-
-                return response;
-            } catch (err) {
-                console.error(`[API] Fetch Error:`, err);
-                throw err;
-            }
-        }
+    <script type="module">
+        import { apiFetch } from './assets/js/api.js';
+        import { saveToken } from './assets/js/auth.js';
 
         let isLoginMode = false;
         const form = document.getElementById('registration-form');

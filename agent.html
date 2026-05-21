@@ -115,12 +115,15 @@
     <!-- Left: Manuscript -->
     <section class="flex-1">
         <div class="clay-card p-12 rounded-3xl relative overflow-hidden bg-white dark:bg-slate-900">
-            <div class="flex items-center gap-4 mb-8">
+            <div class="flex items-center justify-between mb-8">
                 <div class="px-4 py-1.5 bg-secondary/30 rounded-full text-[10px] font-black uppercase tracking-widest text-secondary-dim flex items-center gap-2" id="lang-badge">
                     <span class="material-symbols-outlined text-sm">translate</span> LOADING...
                 </div>
             </div>
+
             <h1 id="song-title-display" class="text-4xl font-black text-slate-800 dark:text-white mb-8 leading-tight">Loading Song...</h1>
+            
+            <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-4">Current Manuscript</p>
             <div id="manuscript-body" class="space-y-4 text-xl leading-relaxed text-slate-600 dark:text-slate-300 italic">
                 Awaiting content from Editor...
             </div>
@@ -231,6 +234,7 @@
         analyzeBtn: document.getElementById('analyze-manuscript-btn'),
         deepBtn: document.getElementById('deep-analyze-btn'),
         exportBtn: document.getElementById('export-report-btn'),
+        copyBtn: document.getElementById('copy-refined-btn'),
         songTitleDisplay: document.getElementById('song-title-display'),
         originalBody: document.getElementById('manuscript-body'),
         resultBody: document.getElementById('result-body')

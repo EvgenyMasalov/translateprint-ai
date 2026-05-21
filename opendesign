@@ -7,13 +7,4 @@
       "env": {"ELECTRON_RUN_AS_NODE":"1"}
     }
   }
-}{
-  "servers": {
-    "open-design": {
-      "type": "stdio",
-      "command": "C:\\Users\\Евгений Масалов\\AppData\\Local\\Programs\\Open Design release-stable-win\\Open Design.exe",
-      "args": ["C:\\Users\\Евгений Масалов\\AppData\\Local\\Programs\\Open Design release-stable-win\\resources\\app\\node_modules\\@open-design\\daemon\\dist\\cli.js","mcp","--daemon-url","http://127.0.0.1:9939"],
-      "env": {"ELECTRON_RUN_AS_NODE":"1"}
-    }
-  }
 }

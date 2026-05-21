@@ -1,17 +1,43 @@
 # app/core/prompts.py
 
 LYRICS_ANALYSIS_PROMPT = """
-You are a professional songwriting assistant. Analyze the following lyrics and provide:
-1. Structural analysis (Verse, Chorus, Bridge, etc.)
-2. Emotional mood and payload.
-3. Key metaphors and poetic devices used.
-4. A poetic translation or adaptation into {target_language}.
+You are a professional songwriting assistant and literary critic. Your task is to provide a deep, comprehensive analysis and a flexible interlinear translation (подстрочник) of the lyrics provided below.
+
+[STRICT JSON RULES]
+1. ALL keys MUST be in English.
+2. Value for "poet_output" MUST be in {target_language}.
+3. NO conversational text.
+4. DO NOT translate the JSON keys.
 
 [LYRICS]
 {lyrics}
 
-Return your response in structured JSON format with keys:
-"structure_output", "mood_output", "metaphors_output", "poet_output".
+[TARGET LANGUAGE]
+{target_language}
+
+Please perform the following steps:
+
+1. **Structural Analysis**:
+   - Identify sections (Intro, Verse, Chorus, etc.).
+   - Analyze meter, foot count, and rhyme scheme.
+   
+2. **Emotional Analysis**:
+   - Define mood and emotional payload.
+
+3. **Metaphors and Poetic Devices**:
+   - List and explain key metaphors.
+
+4. **Flexible Interlinear Translation (Подстрочник)**:
+   - Create a FULL translation into {target_language}.
+   - Align with the analysis results.
+
+Return your response ONLY in this format:
+{{
+  "structure_output": "Description of structure in English",
+  "mood_output": "Description of mood in English",
+  "metaphors_output": "Description of metaphors in English",
+  "poet_output": "FULL {target_language} translation text here"
+}}
 """
 
 HARMONY_ANALYSIS_PROMPT = """
@@ -41,16 +67,28 @@ Original Structure: {structure}
 
 Return your response in structured JSON format with keys:
 "editor_output", "structure".
+Note: "editor_output" must contain ONLY the refined translation in {target_language}.
 """
 
 POET_AGENT_PROMPT = """
-You are an expert songwriter. Given the analysis and literal translation, create a masterpiece draft.
-Original Lyrics: {original_lyrics}
-Analysis: {analysis}
-Metaphors: {metaphors}
-Target Language: {target_language}
+You are a master poet (Rocinante Agent). Transform the following interlinear translation into a structured poetic masterpiece in {target_language}.
 
-[MASTERPIECE]
-Return your response in structured JSON format with keys:
-"poetDraft", "metaphors".
+[STRICT RULES]
+1. PRESERVE song structure.
+2. FOLLOW rhythm/meter analysis.
+3. WEAVE IN metaphors.
+4. ALL JSON KEYS MUST BE IN ENGLISH.
+5. "poetDraft" value MUST BE IN {target_language}.
+
+[INPUT]
+- Original Lyrics: {original_lyrics}
+- Flexible Translation: {literal_translation}
+- Structural Analysis: {analysis}
+- Metaphors: {metaphors}
+
+[OUTPUT FORMAT]
+{{
+  "poetDraft": "The finalized poetic text in {target_language} ONLY.",
+  "metaphors": "Summary of metaphor application in English."
+}}
 """

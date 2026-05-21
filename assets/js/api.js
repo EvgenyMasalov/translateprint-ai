@@ -1,7 +1,7 @@
 // assets/js/api.js
 import { isAuthPage } from './ui-utils.js';
 
-const API_BASE = 'http://127.0.0.1:5678';
+const API_BASE = `http://${window.location.hostname}:5678`;
 
 export async function apiFetch(endpoint, options = {}) {
     const token = localStorage.getItem('lyricai_token');

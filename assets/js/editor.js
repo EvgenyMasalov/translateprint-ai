@@ -45,8 +45,13 @@ export async function initEditor(elements) {
     };
 
     // Load initial state
-    if (currentSongId) {
-        // Option to load last song? For now just fetch library
+    if (currentSongId && currentSongId !== 'null' && currentSongId !== 'undefined') {
+        console.log("[Editor] Found existing song ID:", currentSongId);
+    }
+    
+    // Enable Agent link if we already have a translation
+    if (localStorage.getItem("lyricai_translation")) {
+        elements.navAgent.classList.remove("opacity-50", "pointer-events-none");
     }
 }
 
@@ -76,8 +81,12 @@ export async function saveSong(elements, auto = false) {
         elements.saveBtn.disabled = true;
         elements.saveBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Saving...`;
     }
+
+    // Ensure id is truly null if it's 'null' string
+    const songId = (currentSongId === 'null' || currentSongId === 'undefined') ? null : currentSongId;
+
     const data = {
-        id: currentSongId,
+        id: songId,
         title: elements.songTitle.value.trim() || 'Untitled',
         lyrics: elements.lyricsInput.value,
         structure: elements.analysis.innerText,
@@ -92,30 +101,71 @@ export async function saveSong(elements, auto = false) {
         chords_chorus: localStorage.getItem("lyricai_chords_chorus")
     };
     
+    console.log("[Editor] Attempting to save song...", { id: songId, title: data.title });
+    
     try {
         const response = await apiFetch('/songs', { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' }, 
             body: JSON.stringify(data) 
         });
+        
         if (response && response.ok) {
             const saved = await response.json();
             currentSongId = saved.id;
             localStorage.setItem('lyricai_current_song_id', saved.id);
+            console.log("[Editor] Song saved successfully, ID:", saved.id);
+            
             if (!auto) {
                 elements.saveBtn.innerHTML = `<span class="material-symbols-outlined text-green-500">check_circle</span> Saved`;
-                setTimeout(() => { elements.saveBtn.disabled = false; elements.saveBtn.innerHTML = originalHtml; }, 2000);
+                setTimeout(() => { 
+                    elements.saveBtn.disabled = false; 
+                    elements.saveBtn.innerHTML = originalHtml; 
+                }, 2000);
             }
-        } else if (!auto) {
-            throw new Error("Save failed");
+        } else {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.detail || "Save failed");
         }
     } catch (err) {
+        console.error("[Editor] Save Error:", err);
         if (!auto) {
             elements.saveBtn.disabled = false;
             elements.saveBtn.innerHTML = originalHtml;
             showToast(err.message, "error");
         }
     }
+}
+
+function formatAIOutput(val, isHtml = true) {
+    if (!val) return "";
+    
+    let result = "";
+    if (typeof val === 'string') {
+        result = val;
+    } else if (Array.isArray(val)) {
+        result = val.map(item => (typeof item === 'object' ? JSON.stringify(item) : item)).join("\n");
+    } else if (typeof val === 'object') {
+        const commonKeys = ['text', 'content', 'output', 'lyrics', 'translation', 'result'];
+        let found = false;
+        for (let key of commonKeys) {
+            if (val[key] && typeof val[key] === 'string') {
+                result = val[key];
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            result = Object.entries(val).map(([k, v]) => {
+                const displayV = typeof v === 'object' ? JSON.stringify(v) : v;
+                return isHtml ? `<b>${k}:</b> ${displayV}` : `${k}: ${displayV}`;
+            }).join("\n");
+        }
+    } else {
+        result = String(val);
+    }
+
+    return isHtml ? result.replace(/\n/g, "<br>") : result;
 }
 
 async function analyzeLyrics(elements) {
@@ -134,18 +184,21 @@ async function analyzeLyrics(elements) {
         if (!response.ok) { throw new Error(`Analysis service error: ${response.status}`); }
         
         const data = await response.json();
-        elements.analysis.innerHTML = (data.structure_output || "").replace(/\n/g, "<br>");
-        elements.mood.innerHTML = (data.mood_output || "").replace(/\n/g, "<br>");
-        elements.metaphors.innerHTML = (data.metaphors_output || "").replace(/\n/g, "<br>");
-        elements.poet.innerHTML = (data.poet_output || "").replace(/\n/g, "<br>");
+        
+        // Display formatted HTML
+        elements.analysis.innerHTML = formatAIOutput(data.structure_output, true);
+        elements.mood.innerHTML = formatAIOutput(data.mood_output, true);
+        elements.metaphors.innerHTML = formatAIOutput(data.metaphors_output, true);
+        elements.poet.innerHTML = formatAIOutput(data.poet_output, true);
         
         const music = data.musical_data || {};
         localStorage.setItem("lyricai_original", text);
-        localStorage.setItem("lyricai_translation", data.poet_output || "");
+        // Save clean strings to localStorage
+        localStorage.setItem("lyricai_translation", formatAIOutput(data.poet_output, false));
         localStorage.setItem("lyricai_targetLang", elements.targetLang.value);
-        localStorage.setItem("lyricai_structure", data.structure_output || "");
-        localStorage.setItem("lyricai_mood", data.mood_output || "");
-        localStorage.setItem("lyricai_metaphors", data.metaphors_output || "");
+        localStorage.setItem("lyricai_structure", formatAIOutput(data.structure_output, false));
+        localStorage.setItem("lyricai_mood", formatAIOutput(data.mood_output, false));
+        localStorage.setItem("lyricai_metaphors", formatAIOutput(data.metaphors_output, false));
         localStorage.setItem("lyricai_key", music.key || "");
         localStorage.setItem("lyricai_bpm", music.bpm || "");
         localStorage.setItem("lyricai_chords_verse", music.chords_verse || "");
@@ -254,11 +307,13 @@ async function deleteSong(elements, id) {
 function resetEditor(elements) {
     currentSongId = null;
     localStorage.removeItem('lyricai_current_song_id');
+    localStorage.removeItem('lyricai_refined');
     elements.songTitle.value = '';
     elements.lyricsInput.value = '';
     elements.analysis.innerHTML = 'Awaiting scan...';
     elements.mood.innerHTML = 'Waiting...';
-    elements.poet.innerHTML = 'Awaiting...';
+    elements.metaphors.innerHTML = 'Awaiting AI creative...';
+    elements.poet.innerHTML = 'Awaiting AI creative generation...';
     elements.navAgent.classList.add("opacity-50", "pointer-events-none");
 }
 
