@@ -41,7 +41,7 @@ async def call_llm(url: str, payload: dict):
             log_debug(f"Network error calling Webhook at {url}: {exc}")
             raise HTTPException(status_code=502, detail=f"Gateway error: {str(exc)}")
 
-async def call_polza_ai(prompt: str, model: str):
+async def call_polza_ai(prompt: str, model: str, temperature: float = 0.1):
     """Direct call to Polza AI (OpenAI compatible)"""
     api_key = settings.POLZA_API_KEY.strip("<> ")
     if not api_key or "placeholder" in api_key:
@@ -49,7 +49,7 @@ async def call_polza_ai(prompt: str, model: str):
         return None
 
     log_debug(f"--- START AI REQUEST ---")
-    log_debug(f"Model: {model}")
+    log_debug(f"Model: {model}, Temp: {temperature}")
     
     async with httpx.AsyncClient(timeout=300.0, trust_env=False) as client:
         try:
@@ -64,7 +64,8 @@ async def call_polza_ai(prompt: str, model: str):
                     {"role": "system", "content": "You are a specialized musical and poetic assistant. You MUST return your response as a valid JSON object ONLY. DO NOT use conversational text. ALL KEYS MUST BE IN ENGLISH."},
                     {"role": "user", "content": prompt}
                 ],
-                "max_tokens": 3000
+                "max_tokens": 3000,
+                "temperature": temperature
             }
             
             if "claude" in model or "gpt" in model:

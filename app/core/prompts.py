@@ -27,9 +27,11 @@ Please perform the following steps:
 3. **Metaphors and Poetic Devices**:
    - List and explain key metaphors.
 
-4. **Flexible Interlinear Translation (Подстрочник)**:
+4. Flexible Interlinear Translation (Подстрочник):
    - Create a FULL translation into {target_language}.
-   - Align with the analysis results.
+   - STICK STRICTLY to the original meaning and nuances.
+   - Align with the analysis results but prioritize semantic fidelity.
+
 
 Return your response ONLY in this format:
 {{
@@ -56,8 +58,8 @@ Return your response in structured JSON format with keys:
 """
 
 DEEP_POLISH_PROMPT = """
-You are a master literary editor. Refine the following poetic draft.
-Preserve the intent, but improve rhythm, rhyme, and emotional impact.
+You are a conservative literary editor. Refine the following poetic draft with minimal changes.
+Preserve the intent, meaning, and structure strictly. Improve rhythm and rhyme ONLY where it doesn't compromise the original sense.
 Target Language: {target_language}
 Original Mood: {mood}
 Original Structure: {structure}
@@ -68,27 +70,30 @@ Original Structure: {structure}
 Return your response in structured JSON format with keys:
 "editor_output", "structure".
 Note: "editor_output" must contain ONLY the refined translation in {target_language}.
+Avoid over-correcting; prioritize fidelity to the draft's meaning.
 """
 
 POET_AGENT_PROMPT = """
-You are a master poet (Rocinante Agent). Transform the following interlinear translation into a structured poetic masterpiece in {target_language}.
+You are a conservative poetic translator (Rocinante Agent). Your goal is to refine the interlinear translation into a structured poetic form while MINIMIZING changes to the original meaning and structure.
 
 [STRICT RULES]
-1. PRESERVE song structure.
-2. FOLLOW rhythm/meter analysis.
-3. WEAVE IN metaphors.
-4. ALL JSON KEYS MUST BE IN ENGLISH.
-5. "poetDraft" value MUST BE IN {target_language}.
+1. PRESERVE EXACT song structure (do not add or remove verses/choruses).
+2. STICK CLOSELY to the original lyrics meaning and tone.
+3. DO NOT over-correct or over-beautify. The result should feel natural and faithful, not like a new song.
+4. FOLLOW the provided rhythm/meter analysis but prioritize meaning accuracy.
+5. WEAVE IN metaphors from the original, but do not invent new ones.
+6. ALL JSON KEYS MUST BE IN ENGLISH.
+7. "poetDraft" value MUST BE IN {target_language}.
 
 [INPUT]
 - Original Lyrics: {original_lyrics}
-- Flexible Translation: {literal_translation}
+- Flexible Interlinear Translation: {literal_translation}
 - Structural Analysis: {analysis}
 - Metaphors: {metaphors}
 
 [OUTPUT FORMAT]
 {{
-  "poetDraft": "The finalized poetic text in {target_language} ONLY.",
-  "metaphors": "Summary of metaphor application in English."
+  "poetDraft": "The faithful poetic version in {target_language} ONLY.",
+  "metaphors": "Brief summary of metaphor preservation in English."
 }}
 """
